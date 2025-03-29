@@ -11,6 +11,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 /**
  * 1. CONTEXT
@@ -24,9 +25,29 @@ import { db } from "@/server/db";
  *
  * @see https://trpc.io/docs/server/context
  */
+
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const { userId: clerkUserId } = await auth(); // Fetch Clerk userId
+
+  if (!clerkUserId) {
+    return { auth: null, db, prismaUserId: null, ...opts }; // No user is authenticated
+  }
+
+  // Fetch full user details from Clerk
+  const clerkUser = await currentUser();
+  if (!clerkUser) {
+    return { auth: null, db, prismaUserId: null, ...opts }; // Ensure we have a user
+  }
+
+  // Find corresponding Prisma user based on email
+  const prismaUser = await db.user.findFirst({
+    where: { emailAddress: clerkUser.emailAddresses[0]?.emailAddress },
+  });
+
   return {
+    auth: { userId: clerkUserId }, // Ensure auth object still exists
     db,
+    prismaUserId: prismaUser?.id, // Store Prisma user ID
     ...opts,
   };
 };
@@ -96,6 +117,18 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const isAuthed = t.middleware(({ next, ctx }) => {
+  if (!ctx.auth?.userId) {
+    throw new Error("Unauthorized");
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      auth: ctx.auth as Required<typeof ctx.auth>,
+    },
+  });
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -104,3 +137,4 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+export const protectedProcedure = t.procedure.use(isAuthed);
