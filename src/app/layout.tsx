@@ -4,19 +4,16 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
+} from "@clerk/nextjs";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import KBar from "@/components/kbar";
 
 export const metadata: Metadata = {
   title: "HyperMail",
-  description: "HyperMail is the ultimate AI email assistant that automates organization, prioritizes important messages, and drafts smart replies. Boost productivity and declutter your inbox with cutting-edge AI. Try HyperMail today!",
+  description:
+    "HyperMail is the ultimate AI email assistant that automates organization, prioritizes important messages, and drafts smart replies. Boost productivity and declutter your inbox with cutting-edge AI. Try HyperMail today!",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
@@ -30,18 +27,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
-      <body>
-      <ThemeProvider
+      <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
+        <body>
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-        <TRPCReactProvider>{children}</TRPCReactProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+            <TRPCReactProvider>
+              <KBar>{children}</KBar>
+            </TRPCReactProvider>
+          </ThemeProvider>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
