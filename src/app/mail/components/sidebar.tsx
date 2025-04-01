@@ -7,6 +7,8 @@ import { api } from "@/trpc/react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UserButton } from "@clerk/nextjs";
+import ComposeButton from "./compose-button";
 
 type Props = {
   isCollapsed: boolean;
@@ -121,28 +123,64 @@ const Sidebar = ({ isCollapsed }: Props) => {
           ]}
         />
 
-        {/* Flexible spacer to push the theme toggle to the bottom */}
+        {/* Flexible spacer to push the compose button and user controls to the bottom */}
         <div className="flex-grow"></div>
-
-        {/* Theme toggle positioned at the bottom */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className={`mt-4 rounded-lg p-3 ${isCollapsed ? "mx-1" : "mx-3"} mb-2 border-t pt-4 dark:border-gray-800`}
+        
+        {/* Compose Button with proper styling for sidebar context */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+          className={`${isCollapsed ? "px-1" : "px-3"} mb-4`}
         >
-          {!isCollapsed && (
-            <div className="mb-2 ml-2 inline-block rounded-md bg-white/40 px-2 py-1 text-xs font-medium text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/40 dark:text-gray-300">
-              Appearance
-            </div>
-          )}
-          <div
-            className={`flex ${isCollapsed ? "justify-center" : "items-center justify-between"}`}
-          >
-            {!isCollapsed && <span className="text-sm">Theme</span>}
-            <ThemeToggle />
+          <div className={`${isCollapsed ? "scale-90" : ""} transition-transform duration-300`}>
+            <ComposeButton isCollapsed={isCollapsed} />
           </div>
         </motion.div>
+        
+        {/* User button and theme toggle container */}
+        <div className={`space-y-4 ${isCollapsed ? "px-1" : "px-3"}`}>
+          {/* User Button Section */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between px-1"}`}
+          >
+            {!isCollapsed && (
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Your Profile
+              </span>
+            )}
+            <UserButton
+              appearance={{
+                elements: {
+                  userButtonBox: "w-full h-full",
+                  userButtonTrigger: {
+                    width: "100%",
+                    padding: isCollapsed ? "0" : "0.25rem 0.3rem",
+                    borderRadius: "0.375rem",
+                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                  },
+                },
+              }}
+            />
+          </motion.div>
+
+          {/* Theme Toggle Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between px-2"}`}
+          >
+            {!isCollapsed && (
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Theme
+              </span>
+            )}
+            <ThemeToggle />
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );

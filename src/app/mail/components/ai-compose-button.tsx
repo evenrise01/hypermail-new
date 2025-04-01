@@ -10,12 +10,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Bot, Loader2 } from "lucide-react";
+import { Bot, Loader2, Sparkles } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { generateEmail } from "./action";
 import { readStreamableValue } from "ai/rsc";
 import useThreads from "@/hooks/use-threads";
 import { turndown } from "@/lib/turndown";
+import { motion } from "framer-motion";
 
 type Props = {
   isComposing?: boolean;
@@ -36,7 +37,6 @@ const AIComposeButton = (props: Props) => {
     setLoading(true);
 
     let context = "";
-    // console.log("Starting AI generation with prompt:", prompt);
 
     if (!props.isComposing) {
       for (const email of thread?.emails ?? []) {
@@ -54,7 +54,6 @@ const AIComposeButton = (props: Props) => {
     My name is ${account?.name} and my email is ${account?.emailAddress}
     `;
 
-    // console.log("Context: ",context)
     try {
       const { output } = await generateEmail(context, prompt);
       console.log("Received output from API:", output);
@@ -89,44 +88,59 @@ const AIComposeButton = (props: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          size="icon"
-          variant="outline"
-          onClick={() => setOpen(true)}
-          aria-label="AI Compose"
+        <motion.div
+          whileTap={{ scale: 0.95 }}
         >
-          <Bot className="size-5" />
-        </Button>
+          <Button
+            className="bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] hover:from-[#1D2B64] hover:to-[#F8CDDA] border-none shadow-sm hover:shadow-md transition-all duration-300"
+            size="icon"
+            onClick={() => setOpen(true)}
+            aria-label="AI Compose"
+          >
+            <Bot className="size-5 text-white" />
+          </Button>
+        </motion.div>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>AI Smart Compose</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="border-0 shadow-lg">
+        <div className="absolute top-0 right-0 left-0 z-0 h-12 rounded-t-lg" />
+        <DialogHeader className="relative z-10 pt-2">
+          <DialogTitle className="flex items-center text-lg font-semibold mt-2 text-white dark:text-white">
+            <Sparkles className="mr-2 size-5" />
+            AI Smart Compose
+          </DialogTitle>
+          <DialogDescription className="text-gray-200 dark:text-gray-300">
             AI will help you compose your email based on your prompt.
           </DialogDescription>
         </DialogHeader>
-        <Textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Describe the email you want to write (e.g., 'Polite follow-up to client about overdue payment')"
-          disabled={loading}
-          className="min-h-[120px]"
-        />
+        <div className="mt-2">
+          <Textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Describe the email you want to write (e.g., 'Polite follow-up to client about overdue payment')"
+            disabled={loading}
+            className="min-h-[120px] focus-visible:ring-[#1D2B64] border-gray-300 dark:border-gray-700"
+          />
+        </div>
         <div className="h-2"></div>
-        <Button
-          onClick={aiGenerate}
-          disabled={loading || !prompt.trim()}
-          className="w-full"
+        <motion.div
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
         >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 size-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            "Generate Email"
-          )}
-        </Button>
+          <Button
+            onClick={aiGenerate}
+            disabled={loading || !prompt.trim()}
+            className="w-full bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] hover:from-[#1D2B64] hover:to-[#F8CDDA] text-white font-medium border-none shadow-md hover:shadow-lg transition-all duration-300"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              "Generate Email"
+            )}
+          </Button>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );
