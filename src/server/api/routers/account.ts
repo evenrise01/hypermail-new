@@ -307,6 +307,7 @@ export const accountRouter = createTRPCRouter({
         },
       });
     }),
+    
     getReplyDetails: protectedProcedure.input(z.object({
       accountId: z.string(),
       threadId: z.string()

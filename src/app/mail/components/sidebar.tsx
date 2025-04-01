@@ -6,6 +6,7 @@ import { File, Inbox, Send } from "lucide-react";
 import { api } from "@/trpc/react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Props = {
   isCollapsed: boolean;
@@ -23,28 +24,39 @@ const Sidebar = ({ isCollapsed }: Props) => {
   const { data: threadAccounts } = api.account.findThreadAccounts.useQuery();
 
   // Get counts for the currently selected account
-  const { data: inboxThreads } = api.account.getNumThreads.useQuery({
-    accountId,
-    tab: "inbox",
-  }, { enabled: !!accountId });
-  
-  const { data: draftThreads } = api.account.getNumThreads.useQuery({
-    accountId,
-    tab: "drafts",
-  }, { enabled: !!accountId });
-  
-  const { data: sentThreads } = api.account.getNumThreads.useQuery({
-    accountId,
-    tab: "sent", 
-  }, { enabled: !!accountId });
+  const { data: inboxThreads } = api.account.getNumThreads.useQuery(
+    {
+      accountId,
+      tab: "inbox",
+    },
+    { enabled: !!accountId },
+  );
+
+  const { data: draftThreads } = api.account.getNumThreads.useQuery(
+    {
+      accountId,
+      tab: "drafts",
+    },
+    { enabled: !!accountId },
+  );
+
+  const { data: sentThreads } = api.account.getNumThreads.useQuery(
+    {
+      accountId,
+      tab: "sent",
+    },
+    { enabled: !!accountId },
+  );
 
   // Automatically set accountId to an account that has threads (if we found one and none is selected)
   useEffect(() => {
-    if (threadAccounts && (!accountId)) {
+    if (threadAccounts && !accountId) {
       const accountsWithThreads = Object.keys(threadAccounts.threadsByAccount);
       if (accountsWithThreads.length > 0) {
         const firstAccountWithThreads = accountsWithThreads[0];
-        console.log(`Automatically selecting account ${firstAccountWithThreads} which has threads`);
+        console.log(
+          `Automatically selecting account ${firstAccountWithThreads} which has threads`,
+        );
         setAccountId(firstAccountWithThreads!);
       }
     }
@@ -55,42 +67,26 @@ const Sidebar = ({ isCollapsed }: Props) => {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className={`
-        h-full relative
-        ${isCollapsed ? "w-16" : "w-64"}
-        transition-all duration-300 ease-in-out
-        border-r dark:border-gray-800
-      `}
+      className={`relative h-full ${isCollapsed ? "w-16" : "w-64"} flex flex-col border-r transition-all duration-300 ease-in-out dark:border-gray-800`}
     >
-      <div className={`
-        absolute top-0 left-0 right-0 h-full z-0 opacity-70
-        dark:opacity-25 bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA]
-        rounded-br-3xl
-      `} />
-      
-      <div className="relative z-10 p-2 h-full">
-        <div className={`
-          py-4 px-2 mb-6 rounded-lg
-          ${isCollapsed ? "" : "mx-2"}
-          transition-all duration-300
-        `}>
+      <div
+        className={`absolute top-0 right-0 left-0 z-0 h-full rounded-br-3xl bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] opacity-70 dark:opacity-25`}
+      />
+
+      <div className="relative z-10 flex h-full flex-col p-2">
+        <div
+          className={`mb-6 rounded-lg px-2 py-4 ${isCollapsed ? "" : "mx-2"} transition-all duration-300`}
+        >
           <motion.div
-            className={`
-              ${isCollapsed ? "w-8 h-8" : "w-12 h-12"} 
-              mx-auto mb-2 rounded-full
-              bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA]
-              flex items-center justify-center
-              shadow-md
-              transition-all duration-300
-            `}
+            className={` ${isCollapsed ? "h-8 w-8" : "h-12 w-12"} mx-auto mb-2 flex items-center justify-center rounded-full bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] shadow-md transition-all duration-300`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <Send size={isCollapsed ? 16 : 20} className="text-white" />
           </motion.div>
-          
+
           {!isCollapsed && (
-            <motion.h3 
+            <motion.h3
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
@@ -100,7 +96,7 @@ const Sidebar = ({ isCollapsed }: Props) => {
             </motion.h3>
           )}
         </div>
-        
+
         <Nav
           isCollapsed={isCollapsed}
           links={[
@@ -124,35 +120,29 @@ const Sidebar = ({ isCollapsed }: Props) => {
             },
           ]}
         />
-        
-        {/* Notification area */}
-        {/* {threadAccounts && Object.keys(threadAccounts.threadsByAccount).length > 0 && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className={`
-              mt-4 p-3 rounded-lg text-xs
-              bg-amber-50 dark:bg-amber-900/30
-              text-amber-600 dark:text-amber-400
-              border border-amber-200 dark:border-amber-800
-              ${isCollapsed ? "mx-1" : "mx-3"}
-            `}
+
+        {/* Flexible spacer to push the theme toggle to the bottom */}
+        <div className="flex-grow"></div>
+
+        {/* Theme toggle positioned at the bottom */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className={`mt-4 rounded-lg p-3 ${isCollapsed ? "mx-1" : "mx-3"} mb-2 border-t pt-4 dark:border-gray-800`}
+        >
+          {!isCollapsed && (
+            <div className="mb-2 ml-2 inline-block rounded-md bg-white/40 px-2 py-1 text-xs font-medium text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/40 dark:text-gray-300">
+              Appearance
+            </div>
+          )}
+          <div
+            className={`flex ${isCollapsed ? "justify-center" : "items-center justify-between"}`}
           >
-            {isCollapsed ? (
-              <div className="flex justify-center">
-                <span className="animate-pulse">⚠️</span>
-              </div>
-            ) : (
-              <>
-                No threads found for this account.
-                <div className="mt-1 font-medium">
-                  Threads exist for account: {Object.keys(threadAccounts.threadsByAccount)[0]}
-                </div>
-              </>
-            )}
-          </motion.div>
-        )} */}
+            {!isCollapsed && <span className="text-sm">Theme</span>}
+            <ThemeToggle />
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   );

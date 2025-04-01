@@ -2,16 +2,24 @@
 
 import DOMPurify from "dompurify";
 import useThreads from "@/hooks/use-threads";
-import React, { type ComponentProps } from "react";
+import React, { type ComponentProps, useEffect, useState } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ThreadList = () => {
-  const { threads, threadId, setThreadId } = useThreads();
+  const { threads, threadId, setThreadId, isLoading, isFetching } = useThreads();
+  // Track if we've loaded threads at least once
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
-  //To select a thread, we need to keep track of global state
-  
+  // Update hasLoadedOnce when threads are first loaded
+  useEffect(() => {
+    if (threads && threads.length > 0 && !hasLoadedOnce) {
+      setHasLoadedOnce(true);
+    }
+  }, [threads, hasLoadedOnce]);
+
   const groupedThreads = threads?.reduce(
     (acc, thread) => {
       const date = format(thread.emails[0]?.sentAt ?? new Date(), "yyyy-MM-dd");
@@ -24,9 +32,67 @@ const ThreadList = () => {
     {} as Record<string, typeof threads>,
   );
 
+  // Only show skeleton on initial load, not during refetches
+  if (isLoading && !hasLoadedOnce) {
+    return (
+      <div className="max-h-[calc(100vh-120px)] max-w-full overflow-y-scroll bg-gradient-to-br from-[#1D2B64]/5 to-[#F8CDDA]/5 dark:from-[#1D2B64]/10 dark:to-[#F8CDDA]/10">
+        <div className="flex flex-col gap-2 p-4 pt-0">
+          <div className="mt-5 first:mt-0">
+            <Skeleton className="h-6 w-24 rounded" />
+          </div>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div 
+              key={i} 
+              className="rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+            >
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+                <Skeleton className="h-4 w-4/5" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-11/12" />
+                <div className="flex gap-2 mt-1">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+              </div>
+            </div>
+          ))}
+          <div className="mt-5">
+            <Skeleton className="h-6 w-24 rounded" />
+          </div>
+          {[1, 2, 3].map((i) => (
+            <div 
+              key={`second-${i}`} 
+              className="rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+            >
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+                <Skeleton className="h-4 w-3/5" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-4/5" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-h-[calc(100vh-120px)] max-w-full overflow-y-scroll bg-gradient-to-br from-[#1D2B64]/5 to-[#F8CDDA]/5 dark:from-[#1D2B64]/10 dark:to-[#F8CDDA]/10">
       <div className="flex flex-col gap-2 p-4 pt-0">
+        {/* Optional loading indicator for subsequent fetches */}
+        {isFetching && hasLoadedOnce && (
+          <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 p-1 text-xs text-center text-gray-500 dark:text-gray-400 rounded-md animate-pulse">
+            Refreshing...
+          </div>
+        )}
+        
         {Object.entries(groupedThreads ?? {}).map(([date, threads]) => {
           return (
             <React.Fragment key={date}>
@@ -90,7 +156,7 @@ const ThreadList = () => {
                         ),
                       }}
                     ></div>
-                    {thread.emails[0]?.sysLabels.length > 0 && (
+                    {thread.emails[0]?.sysLabels.length! > 0 && (
                       <div className="flex items-center gap-2 mt-1">
                         {thread.emails[0]?.sysLabels.map(label => {
                           return (

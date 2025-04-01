@@ -12,9 +12,6 @@ const Mail = dynamic(() => import("./mail"), {
 const MailDashboard = () => {
   return (
     <>
-      <div className="absolute bottom-4 right-4">
-        <ThemeToggle />
-      </div>
       <Mail
         defaultCollapsed={false}
         defaultLayout={[20, 32, 48]}
