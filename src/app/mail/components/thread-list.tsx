@@ -87,11 +87,11 @@ const ThreadList = () => {
     <div className="max-h-[calc(100vh-120px)] max-w-full overflow-y-scroll bg-gradient-to-br from-[#1D2B64]/5 to-[#F8CDDA]/5 dark:from-[#1D2B64]/10 dark:to-[#F8CDDA]/10">
       <div className="flex flex-col gap-2 p-4 pt-0">
         {/* Optional loading indicator for subsequent fetches */}
-        {isFetching && hasLoadedOnce && (
+        {/* {isFetching && hasLoadedOnce && (
           <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 p-1 text-xs text-center text-gray-500 dark:text-gray-400 rounded-md animate-pulse">
             Refreshing...
           </div>
-        )}
+        )} */}
         
         {Object.entries(groupedThreads ?? {}).map(([date, threads]) => {
           return (
