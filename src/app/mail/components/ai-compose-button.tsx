@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { BackgroundGradient } from "@/components/ui/background-gradient";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +22,7 @@ import { motion } from "framer-motion";
 type Props = {
   isComposing?: boolean;
   onGenerate: (token: string) => void;
-  onComplete?: () => void; // Add this for completion handling
+  onComplete?: () => void;
 };
 
 const AIComposeButton = (props: Props) => {
@@ -58,7 +59,6 @@ const AIComposeButton = (props: Props) => {
       const { output } = await generateEmail(context, prompt);
       console.log("Received output from API:", output);
 
-      // Handle potential undefined output
       if (!output) {
         throw new Error("No output received from the Gemini API");
       }
@@ -70,7 +70,6 @@ const AIComposeButton = (props: Props) => {
         }
       }
 
-      // Call completion handler if provided
       if (props.onComplete) {
         props.onComplete();
       }
@@ -88,23 +87,27 @@ const AIComposeButton = (props: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <motion.div
-          whileTap={{ scale: 0.95 }}
-        >
-          <Button
-            className="bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] hover:from-[#1D2B64] hover:to-[#F8CDDA] border-none shadow-sm hover:shadow-md transition-all duration-300"
-            size="icon"
-            onClick={() => setOpen(true)}
-            aria-label="AI Compose"
-          >
-            <Bot className="size-5 text-white" />
-          </Button>
+        <motion.div whileTap={{ scale: 0.95 }} className="relative">
+          <BackgroundGradient className="p-0" containerClassName="w-fit my-2">
+            <Button
+              className="min-w-24 rounded-md border-none bg-white px-4 shadow-sm transition-all duration-300 hover:bg-gray-50 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+              onClick={() => setOpen(true)}
+              aria-label="AI Compose"
+            >
+              <div className="flex items-center space-x-1">
+                <Sparkles className="size-4 text-black opacity-80 dark:text-white" />
+                <span className="ml-1 text-sm font-medium text-black dark:text-white">
+                  AI Compose
+                </span>
+              </div>
+            </Button>
+          </BackgroundGradient>
         </motion.div>
       </DialogTrigger>
       <DialogContent className="border-0 shadow-lg">
         <div className="absolute top-0 right-0 left-0 z-0 h-12 rounded-t-lg" />
         <DialogHeader className="relative z-10 pt-2">
-          <DialogTitle className="flex items-center text-lg font-semibold mt-2 text-white dark:text-white">
+          <DialogTitle className="mt-2 flex items-center text-lg font-semibold text-white dark:text-white">
             <Sparkles className="mr-2 size-5" />
             AI Smart Compose
           </DialogTitle>
@@ -118,18 +121,15 @@ const AIComposeButton = (props: Props) => {
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Describe the email you want to write (e.g., 'Polite follow-up to client about overdue payment')"
             disabled={loading}
-            className="min-h-[120px] focus-visible:ring-[#1D2B64] border-gray-300 dark:border-gray-700"
+            className="min-h-[120px] border-gray-300 focus-visible:ring-[#1D2B64] dark:border-gray-700"
           />
         </div>
         <div className="h-2"></div>
-        <motion.div
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
-        >
+        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
           <Button
             onClick={aiGenerate}
             disabled={loading || !prompt.trim()}
-            className="w-full bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] hover:from-[#1D2B64] hover:to-[#F8CDDA] text-white font-medium border-none shadow-md hover:shadow-lg transition-all duration-300"
+            className="w-full border-none bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] font-medium text-white shadow-md transition-all duration-300 hover:from-[#1D2B64] hover:to-[#F8CDDA] hover:shadow-lg"
           >
             {loading ? (
               <>

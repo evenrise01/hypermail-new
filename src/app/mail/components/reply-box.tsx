@@ -5,6 +5,7 @@ import EmailEditor from "./email-editor";
 import { api, type RouterOutputs } from "@/trpc/react";
 import useThreads from "@/hooks/use-threads";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 const ReplyBox = () => {
   const { threadId, accountId } = useThreads();
@@ -68,8 +69,29 @@ const Component = ({replyDetails}: {replyDetails: RouterOutputs['account']['getR
     setCcValues(replyDetails.cc.map(cc => ({label: cc.address, value: cc.address})));
   }, [threadId, accountId, replyDetails]);
 
+  const sendEmail = api.account.sendEmail.useMutation()
   const handleSend = async (value: string) => {
-    console.log(value);
+    if(!replyDetails) return
+
+    sendEmail.mutate({
+      accountId,
+      threadId: threadId ?? undefined,
+      body: value,
+      subject,
+      from: replyDetails.from,
+      to: replyDetails.to.map(to=>({address: to.address, name: to.name ?? ""})),
+      cc: replyDetails.to.map(to=>({address: to.address, name: to.name ?? ""})),
+
+      replyTo: replyDetails.from,
+      inReplyTo: replyDetails.id //Internet message Id
+    },{
+      onSuccess: () => {
+        toast.success('Email sent successfully!')
+      },
+      onError: () => {
+        toast.error('Something went wrong while sending the email!')
+      }
+    })
   };
   
   return (
@@ -82,7 +104,7 @@ const Component = ({replyDetails}: {replyDetails: RouterOutputs['account']['getR
         ccValues={ccValues}
         setCcValues={setCcValues}
         to={replyDetails.to.map(to=>to.address)}
-        isSending={false}
+        isSending={sendEmail.isPending}
         handleSend={handleSend}
       />
     </div>

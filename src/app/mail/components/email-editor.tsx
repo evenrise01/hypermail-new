@@ -12,6 +12,9 @@ import { useTheme } from "next-themes";
 import AIComposeButton from "./ai-compose-button";
 import { generate } from "./action";
 import { readStreamableValue } from "ai/rsc";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { Loader2, Send } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   subject: string;
@@ -97,11 +100,11 @@ const EmailEditor = ({
   if (!editor) return null;
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50 shadow-md dark:border-gray-700 dark:from-[#1D2B64]/90 dark:to-[#F8CDDA]/90">
-      <div className="bg-gradient-to-r from-[#1D2B64]/10 to-[#F8CDDA]/10 p-4 dark:from-[#1D2B64]/30 dark:to-[#F8CDDA]/30">
+    <div className="relative flex flex-col overflow-hidden rounded-lg border border-gray-200 shadow-md dark:border-gray-700">
+      <div className="relative z-10 p-4">
         {expanded && (
           <>
-            <div className="mb-4">
+            <div className="relative z-30 mb-4">
               <TagInput
                 placeholder="To"
                 value={toValues}
@@ -110,7 +113,7 @@ const EmailEditor = ({
               />
             </div>
 
-            <div className="mb-4">
+            <div className="relative z-20 mb-4">
               <TagInput
                 placeholder="cc"
                 value={ccValues}
@@ -132,18 +135,22 @@ const EmailEditor = ({
           </>
         )}
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-[#1D2B64] hover:bg-[#1D2B64]/10 dark:text-[#F8CDDA] dark:hover:bg-[#F8CDDA]/10"
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? "Hide details" : <>Draft to {to.join(", ")}</>}
-        </Button>
-        <AIComposeButton
-          isComposing={defaultToolbarExpanded}
-          onGenerate={onGenerate}
-        />
+        <div className="flex items-center gap-2">
+          {" "}
+          {/* Wrapped buttons in a flex container */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-[#1D2B64] hover:bg-[#1D2B64]/10 dark:text-[#F8CDDA] dark:hover:bg-[#F8CDDA]/10"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? "Hide details" : <>Draft to {to.join(", ")}</>}
+          </Button>
+          <AIComposeButton
+            isComposing={defaultToolbarExpanded}
+            onGenerate={onGenerate}
+          />
+        </div>
       </div>
 
       <Separator className="bg-gray-200 dark:bg-gray-700" />
@@ -172,17 +179,28 @@ const EmailEditor = ({
           </span>
         </div>
 
-        <Button
-          className="bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white hover:from-[#1D2B64]/90 hover:to-[#F8CDDA]/90"
+        <HoverBorderGradient
+          containerClassName="rounded-md"
+          as="button"
           onClick={async () => {
-            //On clicking send, clear the input
             editor?.commands?.clearContent();
             await handleSend(value);
           }}
           disabled={isSending}
+          className="text-black dark:text-white"
         >
-          {isSending ? "Sending..." : "Send"}
-        </Button>
+          {isSending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Sending...</span>
+            </>
+          ) : (
+            <>
+              <Send className="h-4 w-4" />
+              <span>Send</span>
+            </>
+          )}
+        </HoverBorderGradient>
       </div>
     </div>
   );

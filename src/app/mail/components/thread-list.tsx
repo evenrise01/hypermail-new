@@ -35,7 +35,7 @@ const ThreadList = () => {
   // Only show skeleton on initial load, not during refetches
   if (isLoading && !hasLoadedOnce) {
     return (
-      <div className="max-h-[calc(100vh-120px)] max-w-full overflow-y-scroll bg-gradient-to-br from-[#1D2B64]/5 to-[#F8CDDA]/5 dark:from-[#1D2B64]/10 dark:to-[#F8CDDA]/10">
+      <div className="h-full w-full overflow-y-auto bg-gradient-to-br from-[#1D2B64]/5 to-[#F8CDDA]/5 dark:from-[#1D2B64]/10 dark:to-[#F8CDDA]/10">
         <div className="flex flex-col gap-2 p-4 pt-0">
           <div className="mt-5 first:mt-0">
             <Skeleton className="h-6 w-24 rounded" />
@@ -84,7 +84,7 @@ const ThreadList = () => {
   }
 
   return (
-    <div className="max-h-[calc(100vh-120px)] max-w-full overflow-y-scroll bg-gradient-to-br from-[#1D2B64]/5 to-[#F8CDDA]/5 dark:from-[#1D2B64]/10 dark:to-[#F8CDDA]/10">
+    <div className="h-full w-full overflow-y-auto bg-gradient-to-br from-[#1D2B64]/5 to-[#F8CDDA]/5 dark:from-[#1D2B64]/10 dark:to-[#F8CDDA]/10">
       <div className="flex flex-col gap-2 p-4 pt-0">
         {/* Optional loading indicator for subsequent fetches */}
         {/* {isFetching && hasLoadedOnce && (

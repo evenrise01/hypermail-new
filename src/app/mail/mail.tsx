@@ -33,7 +33,7 @@ const Mail = ({
   const [layout, setLayout] = useState(defaultLayout);
   const [tab, setTab] = useLocalStorage<"inbox" | "drafts" | "sent">(
     "hypermail-tab",
-    "inbox"
+    "inbox",
   );
   const [activeTab, setActiveTab] = useState("inbox");
 
@@ -61,8 +61,8 @@ const Mail = ({
           defaultSize={defaultLayout[0]}
           collapsedSize={navCollapsedSize}
           collapsible={true}
-          minSize={15}
-          maxSize={15}
+          minSize={16}
+          maxSize={16}
           onCollapse={() => {
             setIsCollapsed(true);
           }}
@@ -70,8 +70,8 @@ const Mail = ({
             setIsCollapsed(false);
           }}
           className={cn(
-            isCollapsed &&
-              "min-w-[50px] transition-all duration-300 ease-in-out",
+            isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out",
+            "flex flex-col"
           )}
         >
           <div className="flex h-full flex-1 flex-col">
@@ -84,7 +84,7 @@ const Mail = ({
               {/* Account Switcher */}
               <AccountSwitcher isCollapsed={isCollapsed} />
             </div>
-            <div className="flex flex-col h-[calc(100%-54px)]">
+            <div className="flex h-[calc(100%-54px)] flex-col">
               <Separator />
               <div className="flex-grow overflow-auto">
                 {/* Sidebar */}
@@ -92,11 +92,13 @@ const Mail = ({
               </div>
               <div className="mt-auto p-3">
                 {/* AI - Keeping as placeholder */}
-                <div className={cn(
-                  "text-sm font-medium",
-                  isCollapsed ? "text-center" : "",
-                  "px-2 py-1.5 rounded-lg bg-gradient-to-br from-amber-100/50 to-orange-200/50 dark:from-amber-800/20 dark:to-orange-900/20"
-                )}>
+                <div
+                  className={cn(
+                    "text-sm font-medium",
+                    isCollapsed ? "text-center" : "",
+                    "rounded-lg bg-gradient-to-br from-amber-100/50 to-orange-200/50 px-2 py-1.5 dark:from-amber-800/20 dark:to-orange-900/20",
+                  )}
+                >
                   Ask AI
                 </div>
               </div>
@@ -104,13 +106,14 @@ const Mail = ({
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[1]} minSize={30} className="flex flex-col">
+        <ResizablePanel
+          defaultSize={defaultLayout[1]}
+          minSize={30}
+          className="flex flex-col"
+        >
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <div className="flex items-center px-4 py-1">
-              <motion.h1 
-                layout
-                className="text-xl font-bold capitalize"
-              >
+              <motion.h1 layout className="text-xl font-bold capitalize">
                 {activeTab}
               </motion.h1>
               <TabsList className="ml-auto">
@@ -131,30 +134,38 @@ const Mail = ({
               </TabsList>
             </div>
             <Separator />
-            
+
             {/* Search Bar */}
             <div className="px-4 py-2">
               <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search emails..." 
-                  className="pl-8 bg-background dark:bg-gray-900/50 focus-visible:ring-amber-500" 
+                <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
+                <Input
+                  placeholder="Search emails..."
+                  className="bg-background pl-8 focus-visible:ring-amber-500 dark:bg-gray-900/50"
                 />
               </div>
             </div>
-            
+
             <div className="flex-1 overflow-auto">
-              <TabsContent value="inbox" className="h-full m-0 p-0">
-                <ThreadList />
+              <TabsContent value="inbox" className="m-0 h-full p-0">
+                <div className="h-full">
+                  <ThreadList />
+                </div>
               </TabsContent>
-              <TabsContent value="done" className="h-full m-0 p-0">
-                <ThreadList />
+              <TabsContent value="done" className="m-0 h-full p-0">
+                <div className="h-full">
+                  <ThreadList />
+                </div>
               </TabsContent>
             </div>
           </Tabs>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[2]} minSize={30} className="overflow-hidden">
+        <ResizablePanel
+          defaultSize={defaultLayout[2]}
+          minSize={30}
+          className="overflow-hidden"
+        >
           <ThreadDisplay />
         </ResizablePanel>
       </ResizablePanelGroup>

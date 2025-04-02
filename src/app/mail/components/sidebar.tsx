@@ -70,9 +70,20 @@ const Sidebar = ({ isCollapsed }: Props) => {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
       className={`relative h-full ${isCollapsed ? "w-16" : "w-64"} flex flex-col border-r transition-all duration-300 ease-in-out dark:border-gray-800`}
+      style={{
+        // Ensure proper containment for the gradient
+        overflow: "hidden",
+      }}
     >
       <div
-        className={`absolute top-0 right-0 left-0 z-0 h-full rounded-br-3xl bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] opacity-70 dark:opacity-25`}
+        className={`absolute inset-0 z-0 rounded-br-3xl bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] opacity-70 dark:opacity-25`}
+        style={{
+          // Ensure gradient covers entire area including when resized
+          width: "100%",
+          height: "100%",
+          // Prevent gradient from being cut off during animations
+          willChange: "transform",
+        }}
       />
 
       <div className="relative z-10 flex h-full flex-col p-2">
@@ -125,19 +136,21 @@ const Sidebar = ({ isCollapsed }: Props) => {
 
         {/* Flexible spacer to push the compose button and user controls to the bottom */}
         <div className="flex-grow"></div>
-        
+
         {/* Compose Button with proper styling for sidebar context */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.3 }}
           className={`${isCollapsed ? "px-1" : "px-3"} mb-4`}
         >
-          <div className={`${isCollapsed ? "scale-90" : ""} transition-transform duration-300`}>
+          <div
+            className={`${isCollapsed ? "scale-90" : ""} transition-transform duration-300`}
+          >
             <ComposeButton isCollapsed={isCollapsed} />
           </div>
         </motion.div>
-        
+
         {/* User button and theme toggle container */}
         <div className={`space-y-4 ${isCollapsed ? "px-1" : "px-3"}`}>
           {/* User Button Section */}

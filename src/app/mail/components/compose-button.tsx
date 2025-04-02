@@ -10,8 +10,10 @@ import { Pencil, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import React from "react";
 import EmailEditor from "./email-editor";
+import { api } from "@/trpc/react";
+import useThreads from "@/hooks/use-threads";
+import { toast } from "sonner";
 
-// Add isCollapsed to the component props
 type ComposeButtonProps = {
   isCollapsed: boolean;
 };
@@ -25,8 +27,30 @@ const ComposeButton = ({ isCollapsed }: ComposeButtonProps) => {
   >([]);
   const [subject, setSubject] = React.useState<string>("");
 
+  const sendEmail = api.account.sendEmail.useMutation()
+  const {account } = useThreads()
+
   const handleSend = async (value: string) => {
-    console.log("value", value);
+    if(!account) return
+
+    sendEmail.mutate({
+      accountId: account.id,
+      threadId: undefined, //Undefined because it's a new email thread
+      body: value,
+      from: {name: account?.name ?? "Me", address: account.emailAddress ?? "me@example.com"},
+      to: toValues.map(to => ({name: to.value, address: to.value})),
+      cc: ccValues.map(cc => ({name: cc.value, address: cc.value})),
+      replyTo: {name: account?.name ?? "Me", address: account.emailAddress ?? "me@example.com"},
+      subject: subject,
+      inReplyTo: undefined //undefined since we are starting a new email thread
+    }, {
+      onSuccess: () => {
+        toast.success("Email sent successfully!")
+      },
+      onError: () => {
+        toast.error("Something went wrong while sending the email!")
+      }
+    })
   };
 
   return (
@@ -49,28 +73,32 @@ const ComposeButton = ({ isCollapsed }: ComposeButtonProps) => {
           </Button>
         </motion.div>
       </DrawerTrigger>
-      <DrawerContent className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
-        <DrawerHeader>
-          <DrawerTitle className="flex items-center text-xl">
-            <Send
-              size={18}
-              className="mr-2 text-[#1D2B64] dark:text-[#F8CDDA]"
+      <DrawerContent className="h-[90vh] max-h-[90vh] bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
+        <div className="flex h-full flex-col">
+          <DrawerHeader>
+            <DrawerTitle className="flex items-center text-xl">
+              <Send
+                size={18}
+                className="mr-2 text-[#1D2B64] dark:text-[#F8CDDA]"
+              />
+              Compose New Email
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="flex-1 overflow-auto pb-4">
+            <EmailEditor
+              toValues={toValues}
+              setToValues={setToValues}
+              ccValues={ccValues}
+              setCcValues={setCcValues}
+              subject={subject}
+              setSubject={setSubject}
+              to={toValues.map((to) => to.value)}
+              defaultToolbarExpanded={true}
+              handleSend={handleSend}
+              isSending={sendEmail.isPending}
             />
-            Compose New Email
-          </DrawerTitle>
-        </DrawerHeader>
-        <EmailEditor
-          toValues={toValues}
-          setToValues={setToValues}
-          ccValues={ccValues}
-          setCcValues={setCcValues}
-          subject={subject}
-          setSubject={setSubject}
-          to={toValues.map((to) => to.value)}
-          defaultToolbarExpanded={true}
-          handleSend={handleSend}
-          isSending={false}
-        />
+          </div>
+        </div>
       </DrawerContent>
     </Drawer>
   );
