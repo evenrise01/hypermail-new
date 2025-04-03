@@ -248,7 +248,11 @@ export const accountRouter = createTRPCRouter({
         input.accountId,
         ctx.prismaUserId!,
       );
+      //Sync emails
+      const acc = new Account(account.accessToken)
+      await acc.syncEmails().catch(console.error)
 
+      
       let filter: Prisma.ThreadWhereInput = {};
       if (input.tab === "inbox") {
         filter = inboxFilter(account.id);
