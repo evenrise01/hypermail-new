@@ -19,18 +19,13 @@ import { cn } from "@/lib/utils";
 type Props = {
   subject: string;
   setSubject: (value: string) => void;
-
   toValues: { label: string; value: string }[];
   setToValues: (value: { label: string; value: string }[]) => void;
-
   ccValues: { label: string; value: string }[];
   setCcValues: (value: { label: string; value: string }[]) => void;
-
   to: string[];
-
   handleSend: (value: string) => void;
   isSending: boolean;
-
   defaultToolbarExpanded?: boolean;
 };
 
@@ -52,9 +47,10 @@ const EmailEditor = ({
   );
   const [token, setToken] = React.useState<string>("");
   const { theme } = useTheme();
+  const editorContainerRef = React.useRef<HTMLDivElement>(null);
 
   const aiGenerate = async (value: string) => {
-    const { output } = await generate(value); //value - current things that the user is typing in the editor
+    const { output } = await generate(value);
     for await (const token of readStreamableValue(output)) {
       if (token) {
         setToken(token);
@@ -66,12 +62,10 @@ const EmailEditor = ({
     addKeyboardShortcuts() {
       return {
         "Control-Alt-j": () => {
-          // Works on Windows/Linux (Ctrl+Alt+J)
           aiGenerate(this.editor.getText());
           return true;
         },
         "Meta-Alt-j": () => {
-          // Works on Mac (Cmd+Alt+J)
           aiGenerate(this.editor.getText());
           return true;
         },
@@ -92,11 +86,20 @@ const EmailEditor = ({
   }, [editor, token]);
 
   const onGenerate = (token: string) => {
-    console.log(token);
     editor?.commands?.insertContent(token);
   };
 
-  //Wait for the editor to initialise before displaying the Editor
+  const handleEditorClick = (e: React.MouseEvent) => {
+    // Only focus if clicking on the editor container, not on a button or other element
+    if (
+      editorContainerRef.current &&
+      e.target === editorContainerRef.current &&
+      editor
+    ) {
+      editor.commands.focus();
+    }
+  };
+
   if (!editor) return null;
 
   return (
@@ -136,8 +139,6 @@ const EmailEditor = ({
         )}
 
         <div className="flex items-center gap-2">
-          {" "}
-          {/* Wrapped buttons in a flex container */}
           <Button
             variant="ghost"
             size="sm"
@@ -155,7 +156,11 @@ const EmailEditor = ({
 
       <Separator className="bg-gray-200 dark:bg-gray-700" />
 
-      <div className="flex-grow bg-white p-4 dark:bg-gray-800">
+      <div 
+        ref={editorContainerRef}
+        onClick={handleEditorClick}
+        className="flex-grow bg-white p-4 dark:bg-gray-800 cursor-text"
+      >
         <EditorMenubar editor={editor} />
 
         <Separator className="my-2 bg-gray-200 dark:bg-gray-700" />

@@ -1,6 +1,6 @@
 "use client";
 
-import {Letter} from 'react-letter'
+import { Letter } from 'react-letter'
 import Avatar from "react-avatar";
 import useThreads from "@/hooks/use-threads";
 import { cn } from "@/lib/utils";
@@ -15,17 +15,21 @@ type Props = {
 const EmailDisplay = ({ email }: Props) => {
   const { account } = useThreads();
 
-  //Check if the email is sent by me
+  // Check if the email is sent by me
   const isMe = account?.emailAddress === email.from.address;
+  
   return (
     <div
       className={cn(
-        "rounded-md border p-4 transition-all hover:translate-x-2",
-        { "border-l-4 border-l-gray-900": isMe },
+        "rounded-md border p-4 transition-all hover:translate-x-2 bg-card text-card-foreground",
+        { 
+          "border-l-4 border-l-primary": isMe,
+          "ml-6 border-r-4 border-r-primary": !isMe // Add indentation for received emails
+        }
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
           {!isMe && (
             <Avatar
               name={email.from.name ?? email.from.address}
@@ -33,18 +37,28 @@ const EmailDisplay = ({ email }: Props) => {
               size="35"
               textSizeRatio={2}
               round={true}
+              className="border-2 border-transparent hover:border-primary transition-colors"
             />
           )}
           <span className="font-medium">
-            {isMe ? "Me" : email.from.address}
+            {isMe ? "Me" : email.from.name || email.from.address}
           </span>
         </div>
         <p className="text-muted-foreground text-xs">
           {formatDistanceToNow(email.sentAt ?? new Date(), { addSuffix: true })}
         </p>
       </div>
+      
       <div className="h-4"></div>
-            <Letter html={email?.body ?? ''} className='bg-white rounded-md text-black'/>
+      
+      <Letter 
+        html={email?.body ?? ''} 
+        className={cn(
+          "rounded-md p-4 bg-white dark:bg-gray-900",
+          "text-gray-900 dark:text-gray-100",
+          "border border-gray-200 dark:border-gray-700"
+        )}
+      />
     </div>
   );
 };

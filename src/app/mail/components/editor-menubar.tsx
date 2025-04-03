@@ -1,13 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Editor } from "@tiptap/react";
 import {
   Bold,
   Code,
-  CodepenIcon,
   Heading1,
   Heading2,
   Heading3,
@@ -125,7 +128,7 @@ const EditorMenubar = ({ editor }: { editor: Editor }) => {
   return (
     <TooltipProvider>
       <ScrollArea className="w-full">
-        <div className="flex items-center gap-1 p-1 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-md border border-[#1D2B64]/10 dark:border-[#F8CDDA]/10 shadow-sm">
+        <div className="flex items-center gap-1 rounded-md border border-[#1D2B64]/10 bg-white/80 p-1 shadow-sm backdrop-blur-sm dark:border-[#F8CDDA]/10 dark:bg-gray-900/80">
           <div className="flex items-center">
             {formatButtons.map((button, index) => (
               <Tooltip key={index}>
@@ -136,22 +139,28 @@ const EditorMenubar = ({ editor }: { editor: Editor }) => {
                     onClick={button.action}
                     disabled={button.canRun ? !button.canRun() : false}
                     className={
-                      button.isActive() 
-                        ? "bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white h-8 w-8 rounded-md"
-                        : "h-8 w-8 rounded-md hover:bg-gradient-to-r hover:from-[#1D2B64]/10 hover:to-[#F8CDDA]/10"
+                      button.isActive()
+                        ? "h-8 w-8 rounded-md text-white dark:text-black"
+                        : "h-8 w-8 rounded-md"
                     }
                   >
                     {button.icon}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white border-none">
+                <TooltipContent
+                  side="bottom"
+                  className="border-none text-white dark:text-black"
+                >
                   <p>{button.title}</p>
                 </TooltipContent>
               </Tooltip>
             ))}
           </div>
 
-          <Separator orientation="vertical" className="mx-1 h-6 bg-[#1D2B64]/20 dark:bg-[#F8CDDA]/20" />
+          <Separator
+            orientation="vertical"
+            className="mx-1 h-6 bg-[#1D2B64]/20 dark:bg-[#F8CDDA]/20"
+          />
 
           <div className="flex items-center">
             {headingButtons.map((button, index) => (
@@ -162,22 +171,28 @@ const EditorMenubar = ({ editor }: { editor: Editor }) => {
                     size="icon"
                     onClick={button.action}
                     className={
-                      button.isActive() 
-                        ? "bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white h-8 w-8 rounded-md"
-                        : "h-8 w-8 rounded-md hover:bg-gradient-to-r hover:from-[#1D2B64]/10 hover:to-[#F8CDDA]/10"
+                      button.isActive()
+                        ? "h-8 w-8 rounded-md text-white dark:text-black"
+                        : "h-8 w-8 rounded-md"
                     }
                   >
                     {button.icon}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white border-none">
+                <TooltipContent
+                  side="bottom"
+                  className="border-none text-white dark:text-black"
+                >
                   <p>{button.title}</p>
                 </TooltipContent>
               </Tooltip>
             ))}
           </div>
 
-          <Separator orientation="vertical" className="mx-1 h-6 bg-[#1D2B64]/20 dark:bg-[#F8CDDA]/20" />
+          <Separator
+            orientation="vertical"
+            className="mx-1 h-6 bg-[#1D2B64]/20 dark:bg-[#F8CDDA]/20"
+          />
 
           <div className="flex items-center">
             {listButtons.map((button, index) => (
@@ -188,22 +203,28 @@ const EditorMenubar = ({ editor }: { editor: Editor }) => {
                     size="icon"
                     onClick={button.action}
                     className={
-                      button.isActive() 
-                        ? "bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white h-8 w-8 rounded-md"
-                        : "h-8 w-8 rounded-md hover:bg-gradient-to-r hover:from-[#1D2B64]/10 hover:to-[#F8CDDA]/10"
+                      button.isActive()
+                        ? "h-8 w-8 rounded-md text-white dark:text-black"
+                        : "h-8 w-8 rounded-md"
                     }
                   >
                     {button.icon}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white border-none">
+                <TooltipContent
+                  side="bottom"
+                  className="border-none text-white dark:text-black"
+                >
                   <p>{button.title}</p>
                 </TooltipContent>
               </Tooltip>
             ))}
           </div>
 
-          <Separator orientation="vertical" className="mx-1 h-6 bg-[#1D2B64]/20 dark:bg-[#F8CDDA]/20" />
+          <Separator
+            orientation="vertical"
+            className="mx-1 h-6 bg-[#1D2B64]/20 dark:bg-[#F8CDDA]/20"
+          />
 
           <div className="flex items-center">
             {historyButtons.map((button, index) => (
@@ -214,12 +235,15 @@ const EditorMenubar = ({ editor }: { editor: Editor }) => {
                     size="icon"
                     onClick={button.action}
                     disabled={button.canRun ? !button.canRun() : false}
-                    className="h-8 w-8 rounded-md hover:bg-gradient-to-r hover:from-[#1D2B64]/10 hover:to-[#F8CDDA]/10"
+                    className="h-8 w-8 rounded-md "
                   >
                     {button.icon}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white border-none">
+                <TooltipContent
+                  side="bottom"
+                  className="border-none text-white dark:text-black"
+                >
                   <p>{button.title}</p>
                 </TooltipContent>
               </Tooltip>
