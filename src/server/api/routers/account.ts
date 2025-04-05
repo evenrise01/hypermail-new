@@ -5,6 +5,7 @@ import type { Prisma } from "@prisma/client";
 import { emailAddressSchema } from "@/lib/types";
 import { Account } from "@/lib/account";
 import { access } from "fs/promises";
+import { OramaClient } from "@/lib/orama";
 
 export const authoriseAccountAccess = async (
   accountId: string,
@@ -22,6 +23,8 @@ export const authoriseAccountAccess = async (
       accessToken: true,
     },
   });
+  // console.log("UserId: ", userId)
+  // console.log("AccountId: ", accountId)
   if (!account) throw new Error("Account not found");
   return account;
 };
@@ -45,8 +48,6 @@ const draftFilter = (accountId: string): Prisma.ThreadWhereInput => ({
 
 export const accountRouter = createTRPCRouter({
   getAccounts: protectedProcedure.query(async ({ ctx }) => {
-    // console.log("Current userId:", ctx.auth.userId);
-    // console.log("Current user prismaId:", ctx.prismaUserId);
     return await ctx.db.account.findMany({
       where: {
         userId: ctx.prismaUserId,
@@ -244,15 +245,15 @@ export const accountRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+
       const account = await authoriseAccountAccess(
         input.accountId,
         ctx.prismaUserId!,
       );
       //Sync emails
-      const acc = new Account(account.accessToken)
-      await acc.syncEmails().catch(console.error)
+      const acc = new Account(account.accessToken);
+      await acc.syncEmails().catch(console.error);
 
-      
       let filter: Prisma.ThreadWhereInput = {};
       if (input.tab === "inbox") {
         filter = inboxFilter(account.id);
@@ -314,75 +315,118 @@ export const accountRouter = createTRPCRouter({
         },
       });
     }),
-    
-    getReplyDetails: protectedProcedure.input(z.object({
-      accountId: z.string(),
-      threadId: z.string()
-    })).query(async({ctx, input}) => {
+
+  getReplyDetails: protectedProcedure
+    .input(
+      z.object({
+        accountId: z.string(),
+        threadId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
       const account = await authoriseAccountAccess(
         input.accountId,
         ctx.prismaUserId!,
       );
       const thread = await ctx.db.thread.findFirst({
         where: {
-          id: input.threadId
+          id: input.threadId,
         },
         include: {
           emails: {
-            orderBy: {sentAt: 'asc'},
+            orderBy: { sentAt: "asc" },
             select: {
-              from:true,
-              to:true,
-              cc:true,
-              sentAt:true,
+              from: true,
+              to: true,
+              cc: true,
+              sentAt: true,
               subject: true,
               bcc: true,
               internetMessageId: true, //required to send to Aurinko in order to send the email in response to the thread
-            }
-          }
-        }
-      })
-      if(!thread || thread.emails.length === 0) throw new Error('Thread not found')
+            },
+          },
+        },
+      });
+      if (!thread || thread.emails.length === 0)
+        throw new Error("Thread not found");
 
       //Find the last email that doesn't belong to the user itself
-      const lastExternalEmail = thread.emails.reverse().find(email => email.from.address !==account.emailAddress)
+      const lastExternalEmail = thread.emails
+        .reverse()
+        .find((email) => email.from.address !== account.emailAddress);
 
-      if(!lastExternalEmail) throw new Error('No external email found')
+      if (!lastExternalEmail) throw new Error("No external email found");
 
       return {
         subject: lastExternalEmail.subject,
-        to: [lastExternalEmail.from, ...lastExternalEmail.to.filter(to => to.address !==account.emailAddress)],
-        cc: lastExternalEmail.cc.filter(cc => cc.address !== account.emailAddress),
-        from: {name: account.name, address: account.emailAddress},
-        id: lastExternalEmail.internetMessageId
-      }
+        to: [
+          lastExternalEmail.from,
+          ...lastExternalEmail.to.filter(
+            (to) => to.address !== account.emailAddress,
+          ),
+        ],
+        cc: lastExternalEmail.cc.filter(
+          (cc) => cc.address !== account.emailAddress,
+        ),
+        from: { name: account.name, address: account.emailAddress },
+        id: lastExternalEmail.internetMessageId,
+      };
     }),
 
-    sendEmail: protectedProcedure.input(z.object({
-      accountId: z.string(),
-      body: z.string(),
-      subject: z.string(),
-      from: emailAddressSchema,
-      to: z.array(emailAddressSchema),
-      cc: z.array(emailAddressSchema).optional(),
-      bcc: z.array(emailAddressSchema).optional(),
-      replyTo: emailAddressSchema,
-      inReplyTo: z.string().optional(),
-      threadId: z.string().optional(),
-  })).mutation(async ({ ctx, input }) => {
-      const account = await authoriseAccountAccess(input.accountId, ctx.prismaUserId!)
-      const acc = new Account(account.accessToken)
-      console.log('sendmail', input)
+  sendEmail: protectedProcedure
+    .input(
+      z.object({
+        accountId: z.string(),
+        body: z.string(),
+        subject: z.string(),
+        from: emailAddressSchema,
+        to: z.array(emailAddressSchema),
+        cc: z.array(emailAddressSchema).optional(),
+        bcc: z.array(emailAddressSchema).optional(),
+        replyTo: emailAddressSchema,
+        inReplyTo: z.string().optional(),
+        threadId: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const account = await authoriseAccountAccess(
+        input.accountId,
+        ctx.prismaUserId!,
+      );
+      const acc = new Account(account.accessToken);
+      // console.log("sendmail", input);
       await acc.sendEmail({
-          body: input.body,
-          subject: input.subject,
-          threadId: input.threadId,
-          to: input.to,
-          bcc: input.bcc,
-          cc: input.cc,
-          replyTo: input.replyTo,
-          from: input.from,
-          inReplyTo: input.inReplyTo,
-      })
-  }),
+        body: input.body,
+        subject: input.subject,
+        threadId: input.threadId,
+        to: input.to,
+        bcc: input.bcc,
+        cc: input.cc,
+        replyTo: input.replyTo,
+        from: input.from,
+        inReplyTo: input.inReplyTo,
+      });
+    }),
+
+  searchEmails: protectedProcedure
+    .input(
+      z.object({
+        accountId: z.string(),
+        query: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const account = await authoriseAccountAccess(
+        input.accountId,
+        ctx.prismaUserId!,
+      );
+      if (!account) throw new Error("Invalid token")
+
+      const orama = new OramaClient(account.id);
+      await orama.initialise()
+
+      const {query} = input
+      const results = await orama.search({ term: query });
+      return results;
+    }),
 });

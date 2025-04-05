@@ -2,28 +2,79 @@ import { db } from "@/server/db";
 import type { EmailAddress, EmailAttachment, EmailMessage } from "./types";
 import pLimit from "p-limit";
 import { Prisma } from "@prisma/client";
+import { OramaClient } from "./orama";
+import { turndown } from "./turndown";
 
 export async function syncEmailsToDatabase(
   emails: EmailMessage[],
   accountId: string,
 ) {
-  console.log(`Syncing ${emails.length} emails to database`);
-  const limit = pLimit(10); //Promises sent in batches of 10
+  console.log(`Syncing ${emails.length} emails to database for account ${accountId}`);
+  const limit = pLimit(10); // Process 10 emails at a time
+
+  const orama = new OramaClient(accountId);
+  await orama.initialise();
+
+  let processed = 0;
+  const logInterval = setInterval(() => {
+    console.log(`Processed ${processed}/${emails.length} emails...`);
+  }, 5000);
 
   try {
-    //Promise.all might break prisma app fucntionality
-    // Promise.all(
-    //   emails.map((email: EmailMessage, index: number) =>
-    //     upsertEmail(email, index, accountId),
-    //   ),
-    // );
+    async function syncToOrama() {
+      await Promise.all(emails.map(email => {
+        return limit(async () => {
+          try {
+            const body = turndown.turndown(email.body ?? email.bodySnippet ?? '');
+            await orama.insert({
+              subject: email.subject,
+              body: body,
+              rawBody: email.bodySnippet ?? '',
+              from: `${email.from.name} <${email.from.address}>`,
+              to: email.to.map(t => `${t.name} <${t.address}>`),
+              sentAt: new Date(email.sentAt).toISOString(), // Changed to ISO
+              threadId: email.threadId
+            });
+            processed++;
+          } catch (e) {
+            console.error(`Failed to index email "${email.subject}":`, e);
+            throw e;
+          }
+        });
+      }));
+    }
 
-    //Upserting in a sequential manner
-    for (const email of emails){
-        await upsertEmail(email, 0, accountId)
+    async function syncToDB() {
+      for (const [index, email] of emails.entries()) {
+        try {
+          await upsertEmail(email, index, accountId);
+        } catch (e) {
+          console.error(`Failed to upsert email "${email.subject}":`, e);
+          throw e;
+        }
+      }
+    }
+
+    await Promise.all([syncToOrama(), syncToDB()]);
+    await orama.saveIndex();
+
+    // Final verification
+    const actualCount = await orama.getDocumentCount();
+    if (actualCount < emails.length) {
+      console.warn(`Warning: Only ${actualCount} of ${emails.length} emails were indexed`);
+    } else {
+      console.log(`Successfully indexed ${actualCount} emails`);
     }
   } catch (error) {
-    console.log("Oopsies", error);
+    console.error('Failed to sync emails:', {
+      error: error instanceof Error ? error.message : String(error),
+      accountId,
+      processedCount: processed,
+      totalCount: emails.length
+    });
+    throw error;
+  } finally {
+    clearInterval(logInterval);
   }
 }
 

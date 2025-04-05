@@ -17,6 +17,7 @@ import Sidebar from "./components/sidebar";
 import ThreadList from "./components/thread-list";
 import ThreadDisplay from "./components/thread-display";
 import { useLocalStorage } from "usehooks-ts";
+import SearchBar from "./components/search-bar";
 
 type Props = {
   defaultLayout: number[] | undefined;
@@ -136,15 +137,9 @@ const Mail = ({
             <Separator />
 
             {/* Search Bar */}
-            <div className="px-4 py-2">
-              <div className="relative">
-                <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
-                <Input
-                  placeholder="Search emails..."
-                  className="bg-background pl-8 focus-visible:ring-amber-500 dark:bg-gray-900/50"
-                />
-              </div>
-            </div>
+
+              <SearchBar/>
+
 
             <div className="flex-1 overflow-auto">
               <TabsContent value="inbox" className="m-0 h-full p-0">

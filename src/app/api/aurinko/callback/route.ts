@@ -16,6 +16,7 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json({ error: "UNAUTHORIZED - No user data" }, { status: 401 });
   }
 
+  console.log("clerkUserID: ", clerkUserId)
   // Fetch or create user in Prisma based on Clerk email
   let prismaUser = await db.user.findFirst({
     where: { emailAddress: clerkUser.emailAddresses[0]?.emailAddress },
@@ -54,12 +55,12 @@ export const GET = async (req: NextRequest) => {
   // Check if an account already exists with a different userId
   const existingAccount = await db.account.findUnique({
     where: { id: token.accountId.toString() },
-  });
+  }); 
 
   if (existingAccount && existingAccount.userId !== prismaUser.id) {
     return NextResponse.json({ error: "Account already linked to another user" }, { status: 400 });
   }
-
+  console.log("-----TOKEN-------", token)
   // Upsert account
   await db.account.upsert({
     where: { id: token.accountId.toString() },
