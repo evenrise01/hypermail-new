@@ -1,20 +1,45 @@
 "use client";
 import React, { useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { Nav } from "./nav";
-import { File, Inbox, Send } from "lucide-react";
+import { File, Inbox, Send, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { api } from "@/trpc/react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserButton } from "@clerk/nextjs";
 import ComposeButton from "./compose-button";
+import AskAI from "./ask-ai";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Card } from "@/components/ui/card";
+import AccountSwitcher from "./account-switcher";
+
+// Add these variants for the motion animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0 },
+};
 
 type Props = {
   isCollapsed: boolean;
+  toggleCollapse: () => void;
 };
 
-const Sidebar = ({ isCollapsed }: Props) => {
+const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
   const { theme } = useTheme();
   const [accountId, setAccountId] = useLocalStorage("accountId", "");
   const [tab] = useLocalStorage<"inbox" | "drafts" | "sent">(
@@ -22,146 +47,233 @@ const Sidebar = ({ isCollapsed }: Props) => {
     "inbox",
   );
 
-  // Add debug query to find which account has threads
   const { data: threadAccounts } = api.account.findThreadAccounts.useQuery();
-
-  // Get counts for the currently selected account
   const { data: inboxThreads } = api.account.getNumThreads.useQuery(
-    {
-      accountId,
-      tab: "inbox",
-    },
+    { accountId, tab: "inbox" },
     { enabled: !!accountId },
   );
-
   const { data: draftThreads } = api.account.getNumThreads.useQuery(
-    {
-      accountId,
-      tab: "drafts",
-    },
+    { accountId, tab: "drafts" },
     { enabled: !!accountId },
   );
-
   const { data: sentThreads } = api.account.getNumThreads.useQuery(
-    {
-      accountId,
-      tab: "sent",
-    },
+    { accountId, tab: "sent" },
     { enabled: !!accountId },
   );
 
-  // Automatically set accountId to an account that has threads (if we found one and none is selected)
   useEffect(() => {
     if (threadAccounts && !accountId) {
       const accountsWithThreads = Object.keys(threadAccounts.threadsByAccount);
       if (accountsWithThreads.length > 0) {
-        const firstAccountWithThreads = accountsWithThreads[0];
-        console.log(
-          `Automatically selecting account ${firstAccountWithThreads} which has threads`,
-        );
-        setAccountId(firstAccountWithThreads!);
+        setAccountId(accountsWithThreads[0]!);
       }
     }
   }, [threadAccounts, accountId, setAccountId]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3 }}
-      className={`relative h-full ${isCollapsed ? "w-16" : "w-64"} flex flex-col border-r transition-all duration-300 ease-in-out dark:border-gray-800`}
-      style={{
-        // Ensure proper containment for the gradient
-        overflow: "hidden",
-      }}
-    >
-      <div
-        className={`absolute inset-0 z-0 rounded-br-3xl bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] opacity-70 dark:opacity-25`}
-        style={{
-          // Ensure gradient covers entire area including when resized
-          width: "100%",
-          height: "100%",
-          // Prevent gradient from being cut off during animations
-          willChange: "transform",
-        }}
-      />
-
-      <div className="relative z-10 flex h-full flex-col p-2">
-        <div
-          className={`mb-6 rounded-lg px-2 py-4 ${isCollapsed ? "" : "mx-2"} transition-all duration-300`}
-        >
-          <motion.div
-            className={` ${isCollapsed ? "h-8 w-8" : "h-12 w-12"} mx-auto mb-2 flex items-center justify-center rounded-full bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] shadow-md transition-all duration-300`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Send size={isCollapsed ? 16 : 20} className="text-white" />
-          </motion.div>
-
-          {!isCollapsed && (
-            <motion.h3
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="text-center font-semibold text-gray-800 dark:text-gray-200"
+    <div className={cn(
+      "relative h-full flex flex-col border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+      isCollapsed ? "w-16" : "w-64",
+      "transition-all duration-300 ease-in-out"
+    )}>
+      {/* Add AccountSwitcher at the top */}
+      <div className={cn(
+        "flex h-[54px] items-center justify-between",
+        isCollapsed ? "px-1" : "px-4",
+      )}>
+        <AccountSwitcher isCollapsed={isCollapsed} />
+      </div>
+      <Separator />
+      {/* Collapse Button */}
+      <div className="absolute right-0 top-4 -mr-3">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-6 w-6 rounded-full border-2 border-background bg-background shadow-sm hover:bg-accent"
+              onClick={toggleCollapse}
             >
-              HyperMail
-            </motion.h3>
+              {isCollapsed ? (
+                <ChevronsRight className="h-4 w-4" />
+              ) : (
+                <ChevronsLeft className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            {isCollapsed ? "Expand" : "Collapse"}
+          </TooltipContent>
+        </Tooltip>
+      </div>
+
+      {/* Header */}
+      <div className="flex items-center justify-between p-4">
+        <AnimatePresence>
+          {!isCollapsed && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="flex items-center space-x-2"
+            >
+              <Avatar className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600">
+                <AvatarFallback className="bg-transparent">
+                  <Send className="h-4 w-4 text-white" />
+                </AvatarFallback>
+              </Avatar>
+              <span className="font-semibold">HyperMail</span>
+              <Badge variant="secondary" className="text-xs">
+                AI
+              </Badge>
+            </motion.div>
           )}
+        </AnimatePresence>
+      </div>
+
+      <Separator />
+
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto p-2">
+        <div className="space-y-1">
+          <Tooltip disableHoverableContent={!isCollapsed}>
+            <TooltipTrigger asChild>
+              <Button
+                variant={tab === "inbox" ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "w-full justify-start",
+                  isCollapsed && "justify-center px-0"
+                )}
+              >
+                <Inbox className="h-4 w-4" />
+                {!isCollapsed && (
+                  <>
+                    <span className="ml-2">Inbox</span>
+                    {inboxThreads && (
+                      <Badge variant="default" className="ml-auto">
+                        {inboxThreads}
+                      </Badge>
+                    )}
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">
+                Inbox {inboxThreads && `(${inboxThreads})`}
+              </TooltipContent>
+            )}
+          </Tooltip>
+
+          <Tooltip disableHoverableContent={!isCollapsed}>
+            <TooltipTrigger asChild>
+              <Button
+                variant={tab === "drafts" ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "w-full justify-start",
+                  isCollapsed && "justify-center px-0"
+                )}
+              >
+                <File className="h-4 w-4" />
+                {!isCollapsed && (
+                  <>
+                    <span className="ml-2">Drafts</span>
+                    {draftThreads && (
+                      <Badge variant="default" className="ml-auto">
+                        {draftThreads}
+                      </Badge>
+                    )}
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">
+                Drafts {draftThreads && `(${draftThreads})`}
+              </TooltipContent>
+            )}
+          </Tooltip>
+
+          <Tooltip disableHoverableContent={!isCollapsed}>
+            <TooltipTrigger asChild>
+              <Button
+                variant={tab === "sent" ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "w-full justify-start",
+                  isCollapsed && "justify-center px-0"
+                )}
+              >
+                <Send className="h-4 w-4" />
+                {!isCollapsed && (
+                  <>
+                    <span className="ml-2">Sent</span>
+                    {sentThreads && (
+                      <Badge variant="default" className="ml-auto">
+                        {sentThreads}
+                      </Badge>
+                    )}
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">
+                Sent {sentThreads && `(${sentThreads})`}
+              </TooltipContent>
+            )}
+          </Tooltip>
         </div>
+      </div>
 
-        <Nav
-          isCollapsed={isCollapsed}
-          links={[
-            {
-              title: "Inbox",
-              label: inboxThreads?.toString() ?? "0",
-              icon: Inbox,
-              variant: tab === "inbox" ? "default" : "ghost",
-            },
-            {
-              title: "Drafts",
-              label: draftThreads?.toString() ?? "0",
-              icon: File,
-              variant: tab === "drafts" ? "default" : "ghost",
-            },
-            {
-              title: "Sent",
-              label: sentThreads?.toString() ?? "0",
-              icon: Send,
-              variant: tab === "sent" ? "default" : "ghost",
-            },
-          ]}
-        />
-
-        {/* Flexible spacer to push the compose button and user controls to the bottom */}
-        <div className="flex-grow"></div>
-
-        {/* Compose Button with proper styling for sidebar context */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
-          className={`${isCollapsed ? "px-1" : "px-3"} mb-4`}
+      {/* Bottom Actions */}
+      <div className="p-2 space-y-2">
+        <AskAI isCollapsed={isCollapsed} />
+        <ComposeButton isCollapsed={isCollapsed} />
+        
+        {/* User Controls with glass effect */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className={cn(
+            "space-y-4 py-3 rounded-xl bg-white/5 backdrop-blur-sm dark:bg-black/20 border border-white/10 dark:border-white/5",
+            isCollapsed ? "px-1" : "px-3"
+          )}
         >
-          <div
-            className={`${isCollapsed ? "scale-90" : ""} transition-transform duration-300`}
-          >
-            <ComposeButton isCollapsed={isCollapsed} />
-          </div>
-        </motion.div>
+          {/* Command Menu (K) */}
+          {!isCollapsed && (
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center justify-between px-2 py-2 rounded-lg bg-black/5 dark:bg-white/5 cursor-pointer group"
+            >
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                Command
+              </span>
+              <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
+                <span className="text-xs bg-white/20 dark:bg-white/10 p-1 rounded">⌘</span>
+                <span className="text-xs bg-white/20 dark:bg-white/10 p-1 rounded">K</span>
+              </div>
+            </motion.div>
+          )}
 
-        {/* User button and theme toggle container */}
-        <div className={`space-y-4 ${isCollapsed ? "px-1" : "px-3"}`}>
-          {/* User Button Section */}
+          {/* User Button Section with hover effects */}
           <motion.div
+            variants={itemVariants}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between px-1"}`}
+            className={cn(
+              "flex items-center",
+              isCollapsed ? "justify-center" : "justify-between px-2"
+            )}
           >
             {!isCollapsed && (
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Your Profile
+                Profile
               </span>
             )}
             <UserButton
@@ -171,31 +283,38 @@ const Sidebar = ({ isCollapsed }: Props) => {
                   userButtonTrigger: {
                     width: "100%",
                     padding: isCollapsed ? "0" : "0.25rem 0.3rem",
-                    borderRadius: "0.375rem",
-                    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                    borderRadius: "0.5rem",
+                    boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.1)",
                   },
+                  userButtonAvatarBox: "ring-2 ring-offset-2 ring-offset-white/10 ring-indigo-500/30",
                 },
               }}
             />
           </motion.div>
 
-          {/* Theme Toggle Section */}
+          {/* Theme Toggle with animation */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between px-2"}`}
+            variants={itemVariants}
+            className={cn(
+              "flex items-center",
+              isCollapsed ? "justify-center" : "justify-between px-2"
+            )}
           >
             {!isCollapsed && (
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Theme
               </span>
             )}
-            <ThemeToggle />
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 10 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <ThemeToggle />
+            </motion.div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

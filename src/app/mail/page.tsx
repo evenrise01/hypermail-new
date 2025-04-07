@@ -12,11 +12,7 @@ const Mail = dynamic(() => import("./mail"), {
 const MailDashboard = () => {
   return (
     <>
-      <Mail
-        defaultCollapsed={false}
-        defaultLayout={[20, 32, 48]}
-        navCollapsedSize={4}
-      />
+      <Mail defaultLayout={[40, 60]} />
     </>
   );
 };

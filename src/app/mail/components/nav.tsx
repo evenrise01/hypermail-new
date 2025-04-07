@@ -30,14 +30,32 @@ export function Nav({ links, isCollapsed }: NavProps) {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.15,
+        delayChildren: 0.1,
       },
     },
   };
 
   const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, y: 15, scale: 0.95 },
+    show: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { 
+        type: "spring", 
+        stiffness: 350, 
+        damping: 25 
+      } 
+    },
+  };
+
+  // Function to determine badge styling based on count
+  const getBadgeStyle = (count: string) => {
+    const numCount = parseInt(count);
+    if (numCount === 0) return "bg-gray-400/30 dark:bg-gray-600/30";
+    if (numCount > 9) return "bg-red-500/80 dark:bg-red-600/80";
+    return "bg-blue-500/80 dark:bg-blue-600/80";
   };
 
   return (
@@ -48,70 +66,96 @@ export function Nav({ links, isCollapsed }: NavProps) {
       variants={container}
       className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
     >
-      <nav className="grid gap-2 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
+      <nav className="grid gap-3 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
         {links.map((link, index) =>
           isCollapsed ? (
-            <Tooltip key={index} delayDuration={0}>
+            <Tooltip key={index} delayDuration={100}>
               <TooltipTrigger asChild>
-                <motion.span
+                <motion.div
                   variants={item}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ 
+                    scale: 1.08,
+                    boxShadow: link.variant === "default" ? 
+                      "0 0 15px rgba(80, 60, 240, 0.5)" : 
+                      "0 0 8px rgba(80, 60, 240, 0.2)" 
+                  }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setTab(link.title.toLowerCase())}
                   className={cn(
                     buttonVariants({ variant: link.variant, size: "icon" }),
-                    "h-10 w-10 cursor-pointer rounded-lg transition-all duration-300 ease-in-out",
+                    "relative h-11 w-11 cursor-pointer rounded-xl transition-all duration-300 ease-out",
                     link.variant === "default"
-                      ? "bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white shadow-md hover:shadow-lg hover:from-[#1D2B64] hover:to-[#F8CDDA]/90 focus:ring-2 focus:ring-[#F8CDDA]/50 dark:focus:ring-[#F8CDDA]/30"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-[#1D2B64]/10 hover:to-[#F8CDDA]/10 dark:hover:from-[#1D2B64]/20 dark:hover:to-[#F8CDDA]/20 dark:hover:text-white focus:ring-2 focus:ring-[#F8CDDA]/30 dark:focus:ring-[#F8CDDA]/20"
+                      ? "bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white shadow-md shadow-indigo-500/30 dark:shadow-indigo-900/30 hover:shadow-lg hover:shadow-indigo-500/40 dark:hover:shadow-indigo-900/40 focus:ring-2 focus:ring-indigo-400/50 dark:focus:ring-indigo-400/30"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-indigo-600/10 hover:via-purple-600/10 hover:to-pink-500/10 dark:hover:from-indigo-600/20 dark:hover:via-purple-600/20 dark:hover:to-pink-500/20 dark:hover:text-white focus:ring-2 focus:ring-indigo-400/30 dark:focus:ring-indigo-400/20"
                   )}
                 >
                   <link.icon className="h-5 w-5" />
+                  {link.label && link.label !== "0" && (
+                    <motion.span 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className={cn(
+                        "absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold text-white",
+                        getBadgeStyle(link.label)
+                      )}
+                    >
+                      {parseInt(link.label) > 9 ? "9+" : link.label}
+                    </motion.span>
+                  )}
                   <span className="sr-only">{link.title}</span>
-                </motion.span>
+                </motion.div>
               </TooltipTrigger>
               <TooltipContent
                 side="right"
-                className="flex items-center gap-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg"
+                className="flex items-center gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border border-white/20 dark:border-gray-700/50 shadow-lg rounded-lg py-2 px-3"
               >
                 {link.title}
-                {link.label && (
-                  <span className="ml-auto font-semibold text-[#1D2B64] dark:text-[#F8CDDA]">
+                {link.label && link.label !== "0" && (
+                  <span className="ml-auto font-semibold text-indigo-600 dark:text-indigo-400">
                     {link.label}
                   </span>
                 )}
               </TooltipContent>
             </Tooltip>
           ) : (
-            <motion.span
+            <motion.div
               key={index}
               variants={item}
-              whileHover={{ scale: 1.02, x: 2 }}
+              whileHover={{ 
+                scale: 1.02, 
+                x: 3,
+                boxShadow: link.variant === "default" ? 
+                  "0 0 15px rgba(80, 60, 240, 0.4)" : 
+                  "0 0 8px rgba(80, 60, 240, 0.1)" 
+              }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setTab(link.title.toLowerCase())}
               className={cn(
                 buttonVariants({ variant: link.variant, size: "sm" }),
-                "justify-start cursor-pointer px-3 py-2 h-10 rounded-lg transition-all duration-300 ease-in-out",
+                "justify-start cursor-pointer px-4 py-2.5 h-11 rounded-xl transition-all duration-300 ease-out",
                 link.variant === "default"
-                  ? "bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] text-white shadow-md hover:shadow-lg hover:from-[#1D2B64] hover:to-[#F8CDDA]/90 focus:ring-2 focus:ring-[#F8CDDA]/50 dark:focus:ring-[#F8CDDA]/30"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-[#1D2B64]/10 hover:to-[#F8CDDA]/10 dark:hover:from-[#1D2B64]/20 dark:hover:to-[#F8CDDA]/20 focus:ring-2 focus:ring-[#F8CDDA]/30 dark:focus:ring-[#F8CDDA]/20"
+                  ? "bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white shadow-md shadow-indigo-500/30 dark:shadow-indigo-900/30 hover:shadow-lg hover:shadow-indigo-500/40 dark:hover:shadow-indigo-900/40 focus:ring-2 focus:ring-indigo-400/50 dark:focus:ring-indigo-400/30"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-indigo-600/10 hover:via-purple-600/10 hover:to-pink-500/10 dark:hover:from-indigo-600/15 dark:hover:via-purple-600/15 dark:hover:to-pink-500/15 focus:ring-2 focus:ring-indigo-400/30 dark:focus:ring-indigo-400/20"
               )}
             >
-              <link.icon className="mr-2 h-5 w-5" />
-              {link.title}
+              <link.icon className="mr-3 h-5 w-5" />
+              <span className="font-medium">{link.title}</span>
               {link.label && (
-                <span
+                <motion.span
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  whileHover={{ scale: 1.1 }}
                   className={cn(
-                    "ml-auto font-medium",
+                    "ml-auto flex min-w-6 h-6 items-center justify-center rounded-full px-1.5 text-xs font-semibold",
                     link.variant === "default"
-                      ? "text-white"
-                      : "text-[#1D2B64] dark:text-[#F8CDDA]"
+                      ? "bg-white/20 text-white"
+                      : getBadgeStyle(link.label) + " text-white"
                   )}
                 >
                   {link.label}
-                </span>
+                </motion.span>
               )}
-            </motion.span>
+            </motion.div>
           )
         )}
       </nav>

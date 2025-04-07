@@ -63,7 +63,7 @@ const ThreadDisplay = () => {
         size={"icon"}
         disabled={!thread}
         onClick={onClick}
-        className="relative rounded-full transition-all duration-200 hover:bg-gradient-to-r hover:from-[#1D2B64]/10 hover:to-[#F8CDDA]/20"
+        className="relative rounded-full transition-all duration-200 hover:bg-gradient-to-r hover:from-[#1D2B64]/10 hover:to-[#F8CDDA]/20 z-20"
         onMouseEnter={() => setHoveredButton(label)}
         onMouseLeave={() => setHoveredButton(null)}
       >
