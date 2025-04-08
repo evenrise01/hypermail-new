@@ -78,7 +78,7 @@ When responding, please keep in mind:
     // Convert the stream to a proper Response
     return new Response(geminiStream.toDataStream(), {
       headers: {
-        'Content-Type': 'text/plain', // or 'application/x-ndjson' if needed
+        'Content-Type': 'text/plain',
       },
     });
 

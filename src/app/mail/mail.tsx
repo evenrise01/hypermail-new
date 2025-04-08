@@ -14,7 +14,8 @@ import ThreadDisplay from "./components/thread-display";
 import SearchBar from "./components/search-bar";
 import Sidebar from "./components/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { PanelLeftOpen, PanelRightOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   defaultLayout?: number[];
@@ -41,19 +42,36 @@ const Mail = ({
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex h-full min-h-screen">
-        {/* Sidebar - Now directly in the mail component */}
-        <Sidebar 
-          isCollapsed={isCollapsed} 
-          toggleCollapse={() => setIsCollapsed(!isCollapsed)} 
+        {/* Sidebar*/}
+        <Sidebar
+          isCollapsed={isCollapsed}
+          toggleCollapse={() => setIsCollapsed(!isCollapsed)}
         />
 
         {/* Main Content Area with Resizable Panels */}
         <div className="flex-1 overflow-hidden">
           <ResizablePanelGroup direction="horizontal" className="h-full">
             {/* Thread List Panel */}
-            <ResizablePanel defaultSize={defaultLayout[0]} minSize={30} maxSize={70}>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <ResizablePanel
+              defaultSize={defaultLayout[0]}
+              minSize={30}
+              maxSize={70}
+            >
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="flex h-full flex-col"
+              >
                 <div className="flex items-center px-4 py-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                  >
+                    {isCollapsed ? <PanelLeftOpen /> : <PanelRightOpen />}
+                  </Button>
+                  <Separator orientation="vertical" className="mr-2"/>
                   <motion.h1 layout className="text-xl font-bold capitalize">
                     {activeTab}
                   </motion.h1>
@@ -76,11 +94,17 @@ const Mail = ({
                 </div>
                 <Separator />
                 <SearchBar />
-                <div className="flex-1 overflow-auto">
+                <div className="h-full flex-1 overflow-auto">
                   <TabsContent value="inbox" className="m-0 h-full p-0">
                     <ThreadList />
                   </TabsContent>
                   <TabsContent value="done" className="m-0 h-full p-0">
+                    <ThreadList />
+                  </TabsContent>
+                  <TabsContent value="sent" className="m-0 h-full p-0">
+                    <ThreadList />
+                  </TabsContent>
+                  <TabsContent value="draft" className="m-0 h-full p-0">
                     <ThreadList />
                   </TabsContent>
                 </div>

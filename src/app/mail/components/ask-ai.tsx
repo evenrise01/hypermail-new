@@ -6,18 +6,27 @@ import { Send, Sparkles, Loader2, Zap, Brain } from 'lucide-react';
 import { useLocalStorage } from 'usehooks-ts';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import PremiumBanner from './premium-banner';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const transition = {
   type: "spring",
   stiffness: 500,
   damping: 30,
 };
+
+type Props = {
+  isCollapsed: boolean;
+  toggleCollapse: () => void;
+};
+
   
-const AskAI = ({ isCollapsed }: { isCollapsed: boolean }) => {
+const AskAI = ({ isCollapsed, toggleCollapse }: Props) => {
   const [accountId] = useLocalStorage('accountId', '')
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const messageContainerRef = useRef<HTMLDivElement>(null);
+  
   
   const { input, handleInputChange, handleSubmit, messages, isLoading } = useChat({
     api: "/api/chat",
@@ -45,7 +54,32 @@ const AskAI = ({ isCollapsed }: { isCollapsed: boolean }) => {
     }
   }, [messages]);
 
-  if (isCollapsed) return null;
+  if (isCollapsed) {
+    return (
+      <div className="my-6 flex justify-center">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <motion.button
+              onClick={toggleCollapse}
+              className={cn(
+                "flex items-center justify-center w-8 h-8 rounded-lg",
+                "bg-gradient-to-br from-indigo-500 to-purple-500 text-white",
+                "hover:shadow-md hover:shadow-indigo-500/30",
+                "transition-all duration-200"
+              )}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Brain className="size-5" />
+            </motion.button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            Talk to AI Assistant
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    );
+  }
   
   const quickPrompts = [
     { text: 'What can I ask?', icon: <Brain className="size-3" /> },
@@ -54,7 +88,8 @@ const AskAI = ({ isCollapsed }: { isCollapsed: boolean }) => {
   ];
 
   return (
-    <div className='p-2 mb-6'>
+    <div className='py-4 mb-6'>
+      
       <motion.div 
         className={cn(
           "flex flex-1 flex-col items-end justify-end p-3 rounded-xl shadow-sm",

@@ -1,7 +1,16 @@
 "use client";
 import React, { useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { File, Inbox, Send, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  File,
+  Inbox,
+  Send,
+  ChevronsLeft,
+  ChevronsRight,
+  Trash2,
+  BanIcon,
+  Archive,
+} from "lucide-react";
 import { api } from "@/trpc/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
@@ -11,12 +20,16 @@ import ComposeButton from "./compose-button";
 import AskAI from "./ask-ai";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Card } from "@/components/ui/card";
 import AccountSwitcher from "./account-switcher";
+import PremiumBanner from "./premium-banner";
 
 // Add these variants for the motion animations
 const containerVariants = {
@@ -40,26 +53,35 @@ type Props = {
 };
 
 const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
+  const [_, setTab] = useLocalStorage("hypermail-tab", "inbox");
   const { theme } = useTheme();
   const [accountId, setAccountId] = useLocalStorage("accountId", "");
-  const [tab] = useLocalStorage<"inbox" | "drafts" | "sent">(
+  const [tab] = useLocalStorage<"inbox" | "drafts" | "sent" | "junk" | "trash">(
     "hypermail-tab",
     "inbox",
   );
 
   const { data: threadAccounts } = api.account.findThreadAccounts.useQuery();
+  const queryOptions = {
+    enabled: !!accountId,
+    refetchOnMount: true,
+  };
+
   const { data: inboxThreads } = api.account.getNumThreads.useQuery(
     { accountId, tab: "inbox" },
-    { enabled: !!accountId },
+    queryOptions,
   );
   const { data: draftThreads } = api.account.getNumThreads.useQuery(
     { accountId, tab: "drafts" },
-    { enabled: !!accountId },
+    queryOptions,
   );
   const { data: sentThreads } = api.account.getNumThreads.useQuery(
     { accountId, tab: "sent" },
-    { enabled: !!accountId },
+    queryOptions,
   );
+
+  const archiveThreads = 0;
+  const trashThreads = 0;
 
   useEffect(() => {
     if (threadAccounts && !accountId) {
@@ -71,27 +93,31 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
   }, [threadAccounts, accountId, setAccountId]);
 
   return (
-    <div className={cn(
-      "relative h-full flex flex-col border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-      isCollapsed ? "w-16" : "w-64",
-      "transition-all duration-300 ease-in-out"
-    )}>
+    <div
+      className={cn(
+        "bg-background/95 supports-[backdrop-filter]:bg-background/60 relative flex h-full flex-col border-r backdrop-blur",
+        isCollapsed ? "w-16" : "w-64",
+        "transition-all duration-300 ease-in-out",
+      )}
+    >
       {/* Add AccountSwitcher at the top */}
-      <div className={cn(
-        "flex h-[54px] items-center justify-between",
-        isCollapsed ? "px-1" : "px-4",
-      )}>
+      <div
+        className={cn(
+          "flex h-[54px] items-center justify-between",
+          isCollapsed ? "px-1" : "px-4",
+        )}
+      >
         <AccountSwitcher isCollapsed={isCollapsed} />
       </div>
       <Separator />
-      {/* Collapse Button */}
-      <div className="absolute right-0 top-4 -mr-3">
+      {/* Collapse Button - have been moved to mail.tsx beside the Inbox heading*/}
+      {/* <div className="absolute top-4 right-0 -mr-3">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="outline"
               size="icon"
-              className="h-6 w-6 rounded-full border-2 border-background bg-background shadow-sm hover:bg-accent"
+              className="border-background bg-background hover:bg-accent h-6 w-6 rounded-full border-2 shadow-sm"
               onClick={toggleCollapse}
             >
               {isCollapsed ? (
@@ -105,7 +131,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
             {isCollapsed ? "Expand" : "Collapse"}
           </TooltipContent>
         </Tooltip>
-      </div>
+      </div> */}
 
       {/* Header */}
       <div className="flex items-center justify-between p-4">
@@ -139,11 +165,12 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
           <Tooltip disableHoverableContent={!isCollapsed}>
             <TooltipTrigger asChild>
               <Button
+                onClick={() => setTab("inbox")}
                 variant={tab === "inbox" ? "secondary" : "ghost"}
                 size="sm"
                 className={cn(
                   "w-full justify-start",
-                  isCollapsed && "justify-center px-0"
+                  isCollapsed && "justify-center px-0",
                 )}
               >
                 <Inbox className="h-4 w-4" />
@@ -169,11 +196,12 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
           <Tooltip disableHoverableContent={!isCollapsed}>
             <TooltipTrigger asChild>
               <Button
+                onClick={() => setTab("drafts")}
                 variant={tab === "drafts" ? "secondary" : "ghost"}
                 size="sm"
                 className={cn(
                   "w-full justify-start",
-                  isCollapsed && "justify-center px-0"
+                  isCollapsed && "justify-center px-0",
                 )}
               >
                 <File className="h-4 w-4" />
@@ -199,11 +227,12 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
           <Tooltip disableHoverableContent={!isCollapsed}>
             <TooltipTrigger asChild>
               <Button
+                onClick={() => setTab("sent")}
                 variant={tab === "sent" ? "secondary" : "ghost"}
                 size="sm"
                 className={cn(
                   "w-full justify-start",
-                  isCollapsed && "justify-center px-0"
+                  isCollapsed && "justify-center px-0",
                 )}
               >
                 <Send className="h-4 w-4" />
@@ -225,22 +254,87 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
               </TooltipContent>
             )}
           </Tooltip>
+
+          {/* Archive Button */}
+          <Tooltip disableHoverableContent={!isCollapsed}>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => setTab("junk")}
+                variant={tab === "junk" ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "w-full justify-start",
+                  isCollapsed && "justify-center px-0",
+                )}
+              >
+                <Archive className="h-4 w-4" />
+                {!isCollapsed && (
+                  <>
+                    <span className="ml-2">Archive</span>
+                    {archiveThreads && (
+                      <Badge variant="default" className="ml-auto">
+                        {archiveThreads}
+                      </Badge>
+                    )}
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">
+                Archive {archiveThreads && `(${archiveThreads})`}
+              </TooltipContent>
+            )}
+          </Tooltip>
+
+          {/* Trash Button */}
+          <Tooltip disableHoverableContent={!isCollapsed}>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => setTab("trash")}
+                variant={tab === "trash" ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "w-full justify-start",
+                  isCollapsed && "justify-center px-0",
+                )}
+              >
+                <Trash2 className="h-4 w-4" />
+                {!isCollapsed && (
+                  <>
+                    <span className="ml-2">Trash</span>
+                    {trashThreads && (
+                      <Badge variant="default" className="ml-auto">
+                        {trashThreads}
+                      </Badge>
+                    )}
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">
+                Trash {trashThreads && `(${trashThreads})`}
+              </TooltipContent>
+            )}
+          </Tooltip>
         </div>
       </div>
 
       {/* Bottom Actions */}
-      <div className="p-2 space-y-2">
-        <AskAI isCollapsed={isCollapsed} />
+      <div className="p-2">
+        <PremiumBanner isCollapsed={isCollapsed} />
+        <AskAI isCollapsed={isCollapsed} toggleCollapse={toggleCollapse} />
         <ComposeButton isCollapsed={isCollapsed} />
-        
+
         {/* User Controls with glass effect */}
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
           className={cn(
-            "space-y-4 py-3 rounded-xl bg-white/5 backdrop-blur-sm dark:bg-black/20 border border-white/10 dark:border-white/5",
-            isCollapsed ? "px-1" : "px-3"
+            "space-y-4 rounded-xl border border-white/10 bg-white/5 py-3 backdrop-blur-sm dark:border-white/5 dark:bg-black/20",
+            isCollapsed ? "px-1" : "px-3",
           )}
         >
           {/* Command Menu (K) */}
@@ -249,14 +343,18 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center justify-between px-2 py-2 rounded-lg bg-black/5 dark:bg-white/5 cursor-pointer group"
+              className="group flex cursor-pointer items-center justify-between rounded-lg bg-black/5 px-2 py-2 dark:bg-white/5"
             >
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+              <span className="text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">
                 Command
               </span>
               <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
-                <span className="text-xs bg-white/20 dark:bg-white/10 p-1 rounded">⌘</span>
-                <span className="text-xs bg-white/20 dark:bg-white/10 p-1 rounded">K</span>
+                <span className="rounded bg-white/20 p-1 text-xs dark:bg-white/10">
+                  ⌘
+                </span>
+                <span className="rounded bg-white/20 p-1 text-xs dark:bg-white/10">
+                  K
+                </span>
               </div>
             </motion.div>
           )}
@@ -268,7 +366,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
             whileTap={{ scale: 0.98 }}
             className={cn(
               "flex items-center",
-              isCollapsed ? "justify-center" : "justify-between px-2"
+              isCollapsed ? "justify-center" : "justify-between px-2",
             )}
           >
             {!isCollapsed && (
@@ -286,7 +384,8 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
                     borderRadius: "0.5rem",
                     boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.1)",
                   },
-                  userButtonAvatarBox: "ring-2 ring-offset-2 ring-offset-white/10 ring-indigo-500/30",
+                  userButtonAvatarBox:
+                    "ring-2 ring-offset-2 ring-offset-white/10 ring-indigo-500/30",
                 },
               }}
             />
@@ -297,7 +396,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
             variants={itemVariants}
             className={cn(
               "flex items-center",
-              isCollapsed ? "justify-center" : "justify-between px-2"
+              isCollapsed ? "justify-center" : "justify-between px-2",
             )}
           >
             {!isCollapsed && (

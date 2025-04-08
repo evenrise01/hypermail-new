@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Pencil, Send } from "lucide-react";
-import { motion } from "framer-motion";
+import { Pencil, Send, X } from "lucide-react";
 import React from "react";
 import EmailEditor from "./email-editor";
 import { api } from "@/trpc/react";
@@ -56,33 +56,52 @@ const ComposeButton = ({ isCollapsed }: ComposeButtonProps) => {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="w-full"
-        >
+        <div className="w-full group">
           <Button
-            className={`flex w-full items-center justify-center border-none bg-gradient-to-r from-[#1D2B64] to-[#F8CDDA] px-2 py-2 font-medium text-white shadow-md transition-all duration-300 hover:from-[#1D2B64] hover:to-[#F8CDDA] hover:shadow-lg ${isCollapsed ? "px-2" : "px-4"}`}
+            className={`group relative flex w-full items-center justify-center overflow-hidden 
+              ${isCollapsed 
+                ? "rounded-full p-2 bg-blue-600 hover:bg-blue-700" 
+                : "rounded-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"} 
+              text-white shadow-md transition-all duration-300 hover:shadow-lg`}
             variant="default"
             size={isCollapsed ? "icon" : "default"}
           >
-            <Pencil className={`${isCollapsed ? "mr-0" : "mr-2"} size-4`} />
-            {!isCollapsed && (
-              <span className="whitespace-nowrap">Compose</span>
-            )}
-          </Button>
-        </motion.div>
-      </DrawerTrigger>
-      <DrawerContent className="h-[90vh] max-h-[90vh] bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
-        <div className="flex h-full flex-col">
-          <DrawerHeader>
-            <DrawerTitle className="flex items-center text-xl">
-              <Send
-                size={18}
-                className="mr-2 text-[#1D2B64] dark:text-[#F8CDDA]"
+            <span className="relative z-10 flex items-center">
+              <Pencil 
+                className={`${isCollapsed ? "" : "mr-2"} size-4 transition-transform duration-300 
+                  group-hover:rotate-12`} 
               />
-              Compose New Email
-            </DrawerTitle>
+              {!isCollapsed && (
+                <span className="font-medium tracking-wide">Compose</span>
+              )}
+            </span>
+            <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+          </Button>
+        </div>
+      </DrawerTrigger>
+      <DrawerContent className="h-[90vh] max-h-[90vh] bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 border-t-0 rounded-t-lg">
+        <div className="flex h-full flex-col">
+          <DrawerHeader className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <div className="flex items-center justify-between">
+              <DrawerTitle className="flex items-center text-xl font-light text-slate-800 dark:text-slate-200">
+                <div className="flex items-center bg-blue-50 dark:bg-blue-900/30 rounded-full p-2 mr-3">
+                  <Send
+                    size={16}
+                    className="text-blue-600 dark:text-blue-400"
+                  />
+                </div>
+                Compose New Email
+              </DrawerTitle>
+              <DrawerClose asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <X size={18} className="text-slate-500"/>
+              </Button>
+              </DrawerClose>
+            </div>
           </DrawerHeader>
           <div className="flex-1 overflow-auto pb-4">
             <EmailEditor
