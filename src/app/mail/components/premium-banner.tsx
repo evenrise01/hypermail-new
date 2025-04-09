@@ -126,7 +126,7 @@ const PremiumBanner = ({ isCollapsed }: NavProps) => {
                     <TooltipContent side="right">
                         <div className="flex items-center gap-1">
                             <Zap size={12} className="text-blue-500 dark:text-blue-400" />
-                            <p className="text-slate-800 dark:text-slate-200">{remainingCredits} messages left today</p>
+                            <p>{remainingCredits} messages left today</p>
                         </div>
                     </TooltipContent>
                 )}

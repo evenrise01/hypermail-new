@@ -1,16 +1,8 @@
 "use client";
+import { useKBar } from "kbar";
 import React, { useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import {
-  File,
-  Inbox,
-  Send,
-  ChevronsLeft,
-  ChevronsRight,
-  Trash2,
-  BanIcon,
-  Archive,
-} from "lucide-react";
+import { File, Inbox, Send, Trash2, Archive, Command } from "lucide-react";
 import { api } from "@/trpc/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
@@ -91,7 +83,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
       }
     }
   }, [threadAccounts, accountId, setAccountId]);
-
+  const { query } = useKBar();
   return (
     <div
       className={cn(
@@ -145,7 +137,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
             >
               <Avatar className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600">
                 <AvatarFallback className="bg-transparent">
-                  <Send className="h-4 w-4 text-white" />
+                  <Send className="h-5 w-5 text-white" />
                 </AvatarFallback>
               </Avatar>
               <span className="font-semibold">HyperMail</span>
@@ -173,7 +165,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
                   isCollapsed && "justify-center px-0",
                 )}
               >
-                <Inbox className="h-4 w-4" />
+                <Inbox className="h-5 w-5" />
                 {!isCollapsed && (
                   <>
                     <span className="ml-2">Inbox</span>
@@ -204,7 +196,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
                   isCollapsed && "justify-center px-0",
                 )}
               >
-                <File className="h-4 w-4" />
+                <File className="h-5 w-5" />
                 {!isCollapsed && (
                   <>
                     <span className="ml-2">Drafts</span>
@@ -235,7 +227,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
                   isCollapsed && "justify-center px-0",
                 )}
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
                 {!isCollapsed && (
                   <>
                     <span className="ml-2">Sent</span>
@@ -267,7 +259,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
                   isCollapsed && "justify-center px-0",
                 )}
               >
-                <Archive className="h-4 w-4" />
+                <Archive className="h-5 w-5" />
                 {!isCollapsed && (
                   <>
                     <span className="ml-2">Archive</span>
@@ -299,7 +291,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
                   isCollapsed && "justify-center px-0",
                 )}
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-5 w-5" />
                 {!isCollapsed && (
                   <>
                     <span className="ml-2">Trash</span>
@@ -337,80 +329,108 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
             isCollapsed ? "px-1" : "px-3",
           )}
         >
-          {/* Command Menu (K) */}
-          {!isCollapsed && (
-            <motion.div
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="group flex cursor-pointer items-center justify-between rounded-lg bg-black/5 px-2 py-2 dark:bg-white/5"
-            >
-              <span className="text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">
-                Command
-              </span>
-              <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
-                <span className="rounded bg-white/20 p-1 text-xs dark:bg-white/10">
-                  ⌘
-                </span>
-                <span className="rounded bg-white/20 p-1 text-xs dark:bg-white/10">
-                  K
-                </span>
-              </div>
-            </motion.div>
-          )}
+          {/* Command Menu (K) with Tooltip */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`group flex cursor-pointer items-center ${
+                  isCollapsed ? "justify-center" : "justify-between"
+                } rounded-lg bg-black/5 px-2 py-2 dark:bg-white/5`}
+                onClick={() => query.toggle()}
+              >
+                {isCollapsed ? (
+                  <Command className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                ) : (
+                  <>
+                    <span className="text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">
+                      Command
+                    </span>
+                    <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
+                      <span className="rounded bg-white/20 p-1 text-xs dark:bg-white/10">
+                        ⌘
+                      </span>
+                      <span className="rounded bg-white/20 p-1 text-xs dark:bg-white/10">
+                        K
+                      </span>
+                    </div>
+                  </>
+                )}
+              </motion.div>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">Command Menu</TooltipContent>
+            )}
+          </Tooltip>
 
-          {/* User Button Section with hover effects */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={cn(
-              "flex items-center",
-              isCollapsed ? "justify-center" : "justify-between px-2",
+          {/* User Button Section with hover effects and Tooltip */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={cn(
+                  "flex items-center",
+                  isCollapsed ? "justify-center" : "justify-between px-2",
+                )}
+              >
+                {!isCollapsed && (
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Profile
+                  </span>
+                )}
+                <UserButton
+                  appearance={{
+                    elements: {
+                      userButtonBox: "w-full h-full",
+                      userButtonTrigger: {
+                        width: "100%",
+                        padding: isCollapsed ? "0" : "0.25rem 0.3rem",
+                        borderRadius: "0.5rem",
+                        boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.1)",
+                      },
+                      userButtonAvatarBox:
+                        "ring-2 ring-offset-2 ring-offset-white/10 ring-indigo-500/30",
+                    },
+                  }}
+                />
+              </motion.div>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">Profile</TooltipContent>
             )}
-          >
-            {!isCollapsed && (
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Profile
-              </span>
-            )}
-            <UserButton
-              appearance={{
-                elements: {
-                  userButtonBox: "w-full h-full",
-                  userButtonTrigger: {
-                    width: "100%",
-                    padding: isCollapsed ? "0" : "0.25rem 0.3rem",
-                    borderRadius: "0.5rem",
-                    boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.1)",
-                  },
-                  userButtonAvatarBox:
-                    "ring-2 ring-offset-2 ring-offset-white/10 ring-indigo-500/30",
-                },
-              }}
-            />
-          </motion.div>
+          </Tooltip>
 
-          {/* Theme Toggle with animation */}
-          <motion.div
-            variants={itemVariants}
-            className={cn(
-              "flex items-center",
-              isCollapsed ? "justify-center" : "justify-between px-2",
+          {/* Theme Toggle with animation and Tooltip */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <motion.div
+                variants={itemVariants}
+                className={cn(
+                  "flex items-center",
+                  isCollapsed ? "justify-center" : "justify-between px-2",
+                )}
+              >
+                {!isCollapsed && (
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Theme
+                  </span>
+                )}
+                <motion.div
+                  whileHover={{ scale: 1.1, rotate: 10 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <ThemeToggle />
+                </motion.div>
+              </motion.div>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">Toggle Theme</TooltipContent>
             )}
-          >
-            {!isCollapsed && (
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Theme
-              </span>
-            )}
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 10 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ThemeToggle />
-            </motion.div>
-          </motion.div>
+          </Tooltip>
         </motion.div>
       </div>
     </div>
