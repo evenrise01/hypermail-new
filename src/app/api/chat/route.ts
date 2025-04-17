@@ -22,14 +22,41 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { messages, accountId }: { messages: Message[]; accountId: string } = await req.json();
+    // const isSubscribed = await getSubscriptionStatus()
+    //     if (!isSubscribed) {
+    //         const chatbotInteraction = await db.chatbotInteraction.findUnique({
+    //             where: {
+    //                 day: new Date().toDateString(),
+    //                 userId
+    //             }
+    //         })
+    //         if (!chatbotInteraction) {
+    //             await db.chatbotInteraction.create({
+    //                 data: {
+    //                     day: new Date().toDateString(),
+    //                     count: 1,
+    //                     userId
+    //                 }
+    //             })
+    //         } else if (chatbotInteraction.count >= FREE_CREDITS_PER_DAY) {
+    //             return NextResponse.json({ error: "Limit reached" }, { status: 429 });
+    //         }
+    //     }
+    const { messages, accountId }: { messages: Message[]; accountId: string } =
+      await req.json();
 
     if (!messages || messages.length === 0) {
-      return NextResponse.json({ error: "No messages provided" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No messages provided" },
+        { status: 400 },
+      );
     }
 
     if (!accountId) {
-      return NextResponse.json({ error: "accountId is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "accountId is required" },
+        { status: 400 },
+      );
     }
 
     // --- Context Retrieval ---
@@ -38,7 +65,10 @@ export async function POST(req: Request) {
     const lastMessage = messages[messages.length - 1];
 
     if (lastMessage!.role !== "user") {
-      return NextResponse.json({ error: "Last message must be from user" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Last message must be from user" },
+        { status: 400 },
+      );
     }
 
     const context = await oramaManager.vectorSearch({
@@ -65,7 +95,11 @@ When responding, please keep in mind:
 - Keep your responses concise and relevant to the user's questions or the email being composed.`;
 
     const messagesForApi = [
-      { id: `sys_${randomUUID()}`, role: "system" as const, content: systemPrompt },
+      {
+        id: `sys_${randomUUID()}`,
+        role: "system" as const,
+        content: systemPrompt,
+      },
       ...messages,
     ];
 
@@ -78,15 +112,14 @@ When responding, please keep in mind:
     // Convert the stream to a proper Response
     return new Response(geminiStream.toDataStream(), {
       headers: {
-        'Content-Type': 'text/plain',
+        "Content-Type": "text/plain",
       },
     });
-
   } catch (error: any) {
     console.error("Error in API route:", error);
     return NextResponse.json(
       { error: error.message || "An internal server error occurred" },
-      { status: error.status || 500 }
+      { status: error.status || 500 },
     );
   }
 }

@@ -33,6 +33,7 @@ const useThreads = () => {
   // Mark as loading when either initially loading or refetching
   const isLoadingThreads = isLoading || isFetching;
 
+  // console.log("Threads from use-threads: ", threads)
   return {
     threads,
     isFetching,

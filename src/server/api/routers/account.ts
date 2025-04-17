@@ -6,6 +6,7 @@ import { emailAddressSchema } from "@/lib/types";
 import { Account } from "@/lib/account";
 import { access } from "fs/promises";
 import { OramaClient } from "@/lib/orama";
+import { FREE_CREDITS_PER_DAY } from "@/app/constants";
 
 export const authoriseAccountAccess = async (
   accountId: string,
@@ -32,6 +33,7 @@ export const authoriseAccountAccess = async (
 const inboxFilter = (accountId: string): Prisma.ThreadWhereInput => ({
   accountId,
   inboxStatus: true,
+  isTrashed: false, // Important: exclude trashed threads
 });
 
 const sentFilter = (accountId: string): Prisma.ThreadWhereInput => ({
@@ -42,8 +44,24 @@ const sentFilter = (accountId: string): Prisma.ThreadWhereInput => ({
 const draftFilter = (accountId: string): Prisma.ThreadWhereInput => ({
   accountId,
   draftStatus: true,
-  inboxStatus: false, // Ensuring exclusivity
+  inboxStatus: false,
   sentStatus: false,
+});
+
+const archiveFilter = (accountId: string): Prisma.ThreadWhereInput => ({
+  accountId,
+  isArchived: true,
+  isTrashed: false, // Archived threads shouldn't be in trash
+});
+
+const trashFilter = (accountId: string): Prisma.ThreadWhereInput => ({
+  accountId,
+  isTrashed: true,
+});
+
+const starFilter = (accountId: string): Prisma.ThreadWhereInput => ({
+  accountId,
+  isStarred: true,
 });
 
 export const accountRouter = createTRPCRouter({
@@ -237,62 +255,86 @@ export const accountRouter = createTRPCRouter({
   }),
 
   getThreads: protectedProcedure
-    .input(
-      z.object({
-        accountId: z.string(),
-        tab: z.string(),
-        done: z.boolean(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
+  .input(
+    z.object({
+      accountId: z.string(),
+      tab: z.string(),
+      done: z.boolean(),
+    }),
+  )
+  .query(async ({ ctx, input }) => {
+    const account = await authoriseAccountAccess(
+      input.accountId,
+      ctx.prismaUserId!,
+    );
+    if (!account) throw new Error("Invalid token");
+    
+    // Sync emails (keep your existing sync logic)
+    const acc = new Account(account.accessToken);
+    await acc.syncEmails().catch(console.error);
 
-      const account = await authoriseAccountAccess(
-        input.accountId,
-        ctx.prismaUserId!,
-      );
-      //Sync emails
-      const acc = new Account(account.accessToken);
-      await acc.syncEmails().catch(console.error);
+    // Create base filter with account ID
+    let filter: Prisma.ThreadWhereInput = { accountId: account.id };
 
-      let filter: Prisma.ThreadWhereInput = {};
-      if (input.tab === "inbox") {
-        filter = inboxFilter(account.id);
-      } else if (input.tab === "sent") {
-        filter = sentFilter(account.id);
-      } else if (input.tab === "drafts" || input.tab === "draft") {
-        // Handle both variations
-        filter = draftFilter(account.id);
-      }
+    // console.log("Filtering threads for tab: ", input.tab)
 
-      filter.done = {
-        equals: input.done,
-      };
+    // Handle different tab filters
+    switch (input.tab) {
+      case "inbox":
+        filter.inboxStatus = true;
+        filter.isTrashed = false; // Exclude trashed threads from inbox
+        break;
+      case "sent":
+        filter.sentStatus = true;
+        break;
+      case "drafts":
+        filter.draftStatus = true;
+        break;
+      case "archive": // Archive
+        filter.isArchived = true;
+        filter.isTrashed = false; // Archived threads shouldn't be in trash
+        break;
+      case "trash":
+        filter.isTrashed = true;
+        break;
+      case "star":
+        filter.isStarred = true;
+        break;
+      case 'unread':
+        filter.isUnread = true;
+        break;
+    }
 
-      return await ctx.db.thread.findMany({
-        where: filter,
-        include: {
-          emails: {
-            orderBy: {
-              sentAt: "asc",
-            },
-            select: {
-              from: true,
-              body: true,
-              bodySnippet: true,
-              emailLabel: true,
-              subject: true,
-              sysLabels: true,
-              id: true,
-              sentAt: true,
-            },
+    // Add done filter (keep your existing done filter logic)
+    // filter.done = {
+    //   equals: input.done,
+    // };
+    const results =await ctx.db.thread.findMany({
+      where: filter,
+      include: {
+        emails: {
+          orderBy: {
+            sentAt: "asc",
+          },
+          select: {
+            from: true,
+            body: true,
+            bodySnippet: true,
+            emailLabel: true,
+            subject: true,
+            sysLabels: true,
+            id: true,
+            sentAt: true,
           },
         },
-        take: 15,
-        orderBy: {
-          lastMessageDate: "desc",
-        },
-      });
-    }),
+      },
+      take: 15,
+      orderBy: {
+        lastMessageDate: "desc",
+      },
+    });
+    return results
+  }),
 
   getSuggestions: protectedProcedure
     .input(
@@ -316,7 +358,7 @@ export const accountRouter = createTRPCRouter({
       });
     }),
 
-  getReplyDetails: protectedProcedure
+    getReplyDetails: protectedProcedure
     .input(
       z.object({
         accountId: z.string(),
@@ -328,9 +370,11 @@ export const accountRouter = createTRPCRouter({
         input.accountId,
         ctx.prismaUserId!,
       );
+      
       const thread = await ctx.db.thread.findFirst({
         where: {
           id: input.threadId,
+          accountId: input.accountId,
         },
         include: {
           emails: {
@@ -342,34 +386,72 @@ export const accountRouter = createTRPCRouter({
               sentAt: true,
               subject: true,
               bcc: true,
-              internetMessageId: true, //required to send to Aurinko in order to send the email in response to the thread
+              internetMessageId: true,
             },
           },
         },
       });
-      if (!thread || thread.emails.length === 0)
+  
+      if (!thread || thread.emails.length === 0) {
         throw new Error("Thread not found");
-
-      //Find the last email that doesn't belong to the user itself
-      const lastExternalEmail = thread.emails
-        .reverse()
-        .find((email) => email.from.address !== account.emailAddress);
-
-      if (!lastExternalEmail) throw new Error("No external email found");
-
+      }
+  
+      // Safely get the first email for subject fallback
+      const firstEmail = thread.emails[0];
+      if (!firstEmail) {
+        throw new Error("No emails found in thread");
+      }
+  
+      // Clone and reverse to find most recent email
+      const reversedEmails = [...thread.emails].reverse();
+      
+      // Find last relevant email with proper null checks
+      let lastRelevantEmail = reversedEmails.find(
+        (email) => email.from.address !== account.emailAddress
+      );
+      
+      // Fallback to last email if no external email found
+      if (!lastRelevantEmail) {
+        lastRelevantEmail = reversedEmails[0];
+        if (!lastRelevantEmail) {
+          throw new Error("No valid email found in thread");
+        }
+      }
+  
+      // Safely process recipients
+      const allRecipients = [
+        ...(lastRelevantEmail.to || []),
+        ...(lastRelevantEmail.cc || []),
+        ...(lastRelevantEmail.bcc || [])
+      ];
+  
+      const filteredRecipients = allRecipients.filter(
+        (recipient) => recipient?.address !== account.emailAddress
+      );
+  
+      const isReplyToSelf = lastRelevantEmail.from.address === account.emailAddress;
+      const replyAllTo = isReplyToSelf
+        ? filteredRecipients
+        : [lastRelevantEmail.from, ...filteredRecipients];
+  
+      // Ensure subject is properly formatted
+      const subject = firstEmail.subject.startsWith('Re:') 
+        ? firstEmail.subject 
+        : `Re: ${firstEmail.subject || ''}`;
+  
       return {
-        subject: lastExternalEmail.subject,
-        to: [
-          lastExternalEmail.from,
-          ...lastExternalEmail.to.filter(
-            (to) => to.address !== account.emailAddress,
-          ),
-        ],
-        cc: lastExternalEmail.cc.filter(
-          (cc) => cc.address !== account.emailAddress,
+        subject,
+        to: replyAllTo.filter(Boolean), // Remove any null/undefined recipients
+        cc: (lastRelevantEmail.cc || []).filter(
+          (cc) => cc?.address !== account.emailAddress
         ),
-        from: { name: account.name, address: account.emailAddress },
-        id: lastExternalEmail.internetMessageId,
+        from: { 
+          name: account.name, 
+          address: account.emailAddress 
+        },
+        id: lastRelevantEmail.internetMessageId,
+        isReplyToSelf,
+        lastMessageDate: lastRelevantEmail.sentAt,
       };
     }),
 
@@ -429,4 +511,61 @@ export const accountRouter = createTRPCRouter({
       const results = await orama.search({ term: query });
       return results;
     }),
+
+    setDone: protectedProcedure.input(z.object({
+      threadId: z.string().optional(),
+      threadIds: z.array(z.string()).optional(),
+      accountId: z.string()
+  })).mutation(async ({ ctx, input }) => {
+      if (!input.threadId && !input.threadIds) throw new Error("No threadId or threadIds provided")
+      const account = await authoriseAccountAccess(
+        input.accountId,
+        ctx.prismaUserId!,
+      );
+      if (!account) throw new Error("Invalid token")
+      if (input.threadId) {
+          await ctx.db.thread.update({
+              where: {
+                  id: input.threadId
+              },
+              data: {
+                  done: true
+              }
+          })
+      }
+      if (input.threadIds) {
+          await ctx.db.thread.updateMany({
+              where: {
+                  id: {
+                      in: input.threadIds
+                  }
+              },
+              data: {
+                  done: true
+              }
+          })
+      }
+  }),
+
+  getMyAccount: protectedProcedure.input(z.object({
+    accountId: z.string()
+})).query(async ({ ctx, input }) => {
+    const account = await authoriseAccountAccess(
+        input.accountId,
+        ctx.prismaUserId!,
+      );
+    return account
+}),
+getChatbotInteraction: protectedProcedure.query(async ({ ctx }) => {
+    const chatbotInteraction = await ctx.db.chatbotInteraction.findUnique({
+        where: {
+            day: new Date().toDateString(),
+            userId: ctx.auth.userId
+        }, select: { count: true }
+    })
+    const remainingCredits = FREE_CREDITS_PER_DAY - (chatbotInteraction?.count || 0)
+    return {
+        remainingCredits
+    }
+}),
 });

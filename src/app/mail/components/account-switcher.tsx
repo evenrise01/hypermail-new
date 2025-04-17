@@ -74,7 +74,7 @@ const AccountSwitcher = ({ isCollapsed }: Props) => {
           // Hide the default select arrow
           "[&>svg]:hidden",
           // Styles when collapsed
-          isCollapsed && "h-10 w-10 shrink-0 justify-center rounded-full p-0 [&>span]:w-auto"
+          isCollapsed && "h-10 w-10 shrink-0 justify-center rounded-full p-0 [&>span]:w-auto ml-2"
         )}
         aria-label="Select account"
       >

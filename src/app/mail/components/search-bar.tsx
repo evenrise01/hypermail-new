@@ -47,7 +47,7 @@ const SearchBar = () => {
         </motion.div>
 
         <Input
-          placeholder={isSearching ? "Search across all dimensions..." : "Search emails..."}
+          placeholder={isSearching ? "Searching across all emails..." : "Search emails..."}
           className="relative border-none bg-transparent pl-10 pr-10 text-sm backdrop-blur-sm transition-all duration-300 placeholder:text-gray-500/80 focus:ring-2 focus:ring-blue-400/30 dark:placeholder:text-gray-400/80 dark:focus:ring-blue-400/20"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}

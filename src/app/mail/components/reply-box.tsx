@@ -7,6 +7,9 @@ import useThreads from "@/hooks/use-threads";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
+
+type ReplyDetails = RouterOutputs['account']['getReplyDetails'];
+
 const ReplyBox = () => {
   const { threadId, accountId } = useThreads();
   const { data: replyDetails, isLoading } = api.account.getReplyDetails.useQuery({

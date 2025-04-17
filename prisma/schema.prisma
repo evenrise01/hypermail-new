@@ -11,12 +11,12 @@ datasource db {
 }
 
 model User {
-    id                   String              @id @default(cuid())
-    emailAddress         String              @unique
-    firstName            String
-    lastName             String
-    imageUrl             String?
-    
+    id           String  @id @default(cuid())
+    emailAddress String  @unique
+    firstName    String
+    lastName     String
+    imageUrl     String?
+
     stripeSubscriptionId String?             @unique
     stripeSubscription   StripeSubscription? @relation(fields: [stripeSubscriptionId], references: [id])
 
@@ -87,8 +87,17 @@ model Thread {
     accountId       String
     account         Account  @relation(fields: [accountId], references: [id])
 
-    done Boolean @default(false)
+    // Status fields
+    done         Boolean   @default(false)
+    isArchived   Boolean   @default(false)
+    isTrashed    Boolean   @default(false)
+    isStarred    Boolean   @default(false)
+    isMuted      Boolean   @default(false)
+    isSpam       Boolean   @default(false)
+    isRead       Boolean   @default(false)
+    snoozedUntil DateTime?
 
+    // Category fields
     inboxStatus Boolean @default(true)
     draftStatus Boolean @default(false)
     sentStatus  Boolean @default(false)
@@ -97,10 +106,15 @@ model Thread {
 
     @@index([accountId])
     @@index([done])
+    @@index([isArchived])
+    @@index([isTrashed])
+    @@index([isStarred])
     @@index([inboxStatus])
     @@index([draftStatus])
     @@index([sentStatus])
     @@index([lastMessageDate])
+    @@index([isSpam])
+    @@index([isRead])
 }
 
 model Email {

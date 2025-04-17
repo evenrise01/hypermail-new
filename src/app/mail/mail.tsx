@@ -26,7 +26,8 @@ const Mail = ({
   defaultLayout = [40, 60],
   defaultCollapsed = false,
 }: Props) => {
-  const [tab, setTab] = useLocalStorage<"inbox" | "drafts" | "sent">(
+  const [unread, setUnread] = useLocalStorage('hypermail-unread', false)
+  const [tab, setTab] = useLocalStorage<"inbox" | "drafts" | "sent" | "unread">(
     "hypermail-tab",
     "inbox",
   );
@@ -62,7 +63,7 @@ const Mail = ({
                 onValueChange={setActiveTab}
                 className="flex h-full flex-col"
               >
-                <div className="flex items-center px-4 py-1">
+                <div className="flex items-center px-2 py-1">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -86,9 +87,9 @@ const Mail = ({
                     <TabsTrigger
                       value="done"
                       className="text-zinc-600 dark:text-zinc-200"
-                      onClick={() => setTab("done" as any)}
+                      onClick={() => setTab("unread" as any)}
                     >
-                      Done
+                      Unread
                     </TabsTrigger>
                   </TabsList>
                 </div>
@@ -98,13 +99,23 @@ const Mail = ({
                   <TabsContent value="inbox" className="m-0 h-full p-0">
                     <ThreadList />
                   </TabsContent>
-                  <TabsContent value="done" className="m-0 h-full p-0">
+                  <TabsContent value="drafts" className="m-0 h-full p-0">
                     <ThreadList />
                   </TabsContent>
+                  
                   <TabsContent value="sent" className="m-0 h-full p-0">
                     <ThreadList />
                   </TabsContent>
-                  <TabsContent value="draft" className="m-0 h-full p-0">
+                  <TabsContent value="archive" className="m-0 h-full p-0">
+                    <ThreadList />
+                  </TabsContent>
+                  <TabsContent value="trash" className="m-0 h-full p-0">
+                    <ThreadList />
+                  </TabsContent>
+                  <TabsContent value="star" className="m-0 h-full p-0">
+                    <ThreadList />
+                  </TabsContent>
+                  <TabsContent value="done" className="m-0 h-full p-0">
                     <ThreadList />
                   </TabsContent>
                 </div>
