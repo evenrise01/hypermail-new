@@ -301,7 +301,7 @@ export const accountRouter = createTRPCRouter({
         filter.isStarred = true;
         break;
       case 'unread':
-        filter.isUnread = true;
+        filter.isRead = false;
         break;
     }
 
