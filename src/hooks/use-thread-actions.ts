@@ -37,7 +37,7 @@ export const useThreadActions = () => {
     onError: () => toast.error("Failed to move the thread to spam!"),
   });
 
-  const markAsReadThread = api.thread.spamThread.useMutation({
+  const markAsReadThread = api.thread.markAsReadThread.useMutation({
     onSuccess: () => {
       utils.thread.invalidate();
       toast.success("Thread marked as read successfully");
@@ -45,7 +45,7 @@ export const useThreadActions = () => {
     onError: () => toast.error("Failed to mark the thread as read"),
   });
 
-  const markAsUnreadThread = api.thread.spamThread.useMutation({
+  const markAsUnreadThread = api.thread.markAsUnreadThread.useMutation({
     onSuccess: () => {
       utils.thread.invalidate();
       toast.success("Thread marked as unread succesfully");

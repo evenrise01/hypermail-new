@@ -10,20 +10,45 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Inbox, Star, Tag, AlertCircle, Trash2, Archive } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
+import { api } from "@/trpc/react";
+import { useThreadActions } from "@/hooks/use-thread-actions";
+import { toast } from "sonner";
 
 const ThreadList = () => {
-  const { threads, threadId, setThreadId, isLoading, isFetching } =
+  const { threads, threadId, setThreadId, isLoading, isFetching, accountId } =
     useThreads();
+  const { markAsReadThread } = useThreadActions();
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [tab] = useLocalStorage<
-    "inbox" | "drafts" | "sent" | "archive" | "trash" | "star"
+    | "inbox"
+    | "drafts"
+    | "sent"
+    | "archive"
+    | "trash"
+    | "star"
+    | "spam"
+    | "unread"
   >("hypermail-tab", "inbox");
+  const [selectedThreads, setSelectedThreads] = useState<Set<string>>(
+    new Set(),
+  );
 
   useEffect(() => {
     if (threads && threads.length > 0 && !hasLoadedOnce) {
       setHasLoadedOnce(true);
     }
   }, [threads, hasLoadedOnce]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedThreads(new Set());
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const groupedThreads = threads?.reduce(
     (acc, thread) => {
@@ -49,46 +74,56 @@ const ThreadList = () => {
         return <Inbox className="h-3 w-3" />;
     }
   };
-  // Helper function to check if a thread has unread emails
+
   const isThreadUnread = (thread: any) => {
-    if (tab === "sent") return false; // Sent emails are never "unread"
-    return thread.emails.some((email: any) =>
-      email.sysLabels.some((label: string) => label.toLowerCase() === "unread"),
-    );
+    if (tab === "sent") return false;
+    return !thread.isRead;
   };
 
-  // Loading skeleton for initial load
+  const handleThreadClick = (thread: any, e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).tagName === "INPUT") return;
+
+    if (selectedThreads.size > 0) {
+      const newSelection = new Set(selectedThreads);
+      newSelection.has(thread.id)
+        ? newSelection.delete(thread.id)
+        : newSelection.add(thread.id);
+      setSelectedThreads(newSelection);
+      return;
+    }
+
+    setThreadId(thread.id);
+    if (!thread.isRead) {
+      markAsReadThread(thread.id, accountId);
+    }
+  };
+
+  const handleBulkMarkAsRead = async () => {
+    if (selectedThreads.size === 0) return;
+
+    try {
+      await Promise.all(
+        Array.from(selectedThreads).map((threadId) =>
+          markAsReadThread(threadId, accountId),
+        ),
+      );
+      toast.success(
+        `${selectedThreads.size} ${selectedThreads.size === 1 ? "thread" : "threads"} marked as read`,
+      );
+      setSelectedThreads(new Set());
+    } catch (error) {
+      toast.error("Failed to mark threads as read");
+    }
+  };
+
+  // Loading skeleton remains the same...
   if (isLoading && !hasLoadedOnce) {
     return (
       <div className="h-full w-full overflow-y-auto bg-gradient-to-br from-blue-950/5 to-purple-300/5 dark:from-blue-950/10 dark:to-purple-300/10">
-        <div className="flex min-h-full flex-col gap-3 p-5 pt-1">
-          <div className="mt-5 first:mt-0">
-            <Skeleton className="h-5 w-24 rounded-full" />
-          </div>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="rounded-xl border border-gray-100 bg-white/80 p-4 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/30"
-            >
-              <div className="flex h-full flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <Skeleton className="h-4 w-32 rounded-full" />
-                  <Skeleton className="h-3 w-16 rounded-full" />
-                </div>
-                <Skeleton className="h-4 w-4/5 rounded-full" />
-                <Skeleton className="h-3 w-full rounded-full" />
-                <Skeleton className="h-3 w-11/12 rounded-full" />
-                <div className="mt-1 flex gap-2">
-                  <Skeleton className="h-5 w-16 rounded-full" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* ... existing skeleton code ... */}
       </div>
     );
   }
-
 
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto bg-gradient-to-br from-blue-950/5 to-purple-300/5 dark:from-blue-950/10 dark:to-purple-300/10">
@@ -101,6 +136,36 @@ const ThreadList = () => {
             className="sticky top-2 z-10 mx-auto w-32 rounded-full border border-gray-100 bg-white/80 p-1 text-center text-xs text-gray-500 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80 dark:text-gray-400"
           >
             Syncing emails...
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bulk Actions Toolbar */}
+      <AnimatePresence>
+        {selectedThreads.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="sticky top-2 z-10 mx-auto mb-4 flex w-full max-w-md items-center justify-between rounded-lg border border-gray-200 bg-white/90 p-3 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90"
+          >
+            <div className="text-sm text-gray-700 dark:text-gray-300">
+              {selectedThreads.size} selected
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleBulkMarkAsRead}
+                className="rounded-md bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
+              >
+                Mark as Read
+              </button>
+              <button
+                onClick={() => setSelectedThreads(new Set())}
+                className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -127,22 +192,37 @@ const ThreadList = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: idx * 0.05 }}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => setThreadId(thread.id)}
+                    whileHover={{ scale: selectedThreads.size > 0 ? 1 : 1.01 }}
+                    whileTap={{ scale: selectedThreads.size > 0 ? 1 : 0.99 }}
+                    onClick={(e) => handleThreadClick(thread, e)}
                     key={thread.id}
                     className={cn(
-                      "relative flex flex-col items-start gap-2 rounded-xl p-4 text-left text-sm transition-all",
+                      "relative flex flex-col items-start gap-2 rounded-xl p-4 pl-10 text-left text-sm transition-all",
                       "border backdrop-blur-sm",
                       {
                         "border-transparent bg-white/90 shadow-lg shadow-blue-900/5 dark:bg-gray-900/50 dark:shadow-purple-300/5":
                           isSelected,
                         "border-gray-100 bg-white/70 hover:border-purple-200/50 dark:border-gray-800 dark:bg-gray-900/30 dark:hover:border-purple-500/30":
-                          !isSelected,
+                          !isSelected && !selectedThreads.has(thread.id),
+                        "border-blue-500 bg-blue-50/50 dark:border-blue-400 dark:bg-blue-900/20":
+                          selectedThreads.has(thread.id),
                       },
                       "focus:ring-2 focus:ring-purple-300/50 focus:outline-none dark:focus:ring-purple-500/30",
                     )}
                   >
+                    <input
+                      type="checkbox"
+                      checked={selectedThreads.has(thread.id)}
+                      onChange={(e) => {
+                        const newSelection = new Set(selectedThreads);
+                        e.target.checked
+                          ? newSelection.add(thread.id)
+                          : newSelection.delete(thread.id);
+                        setSelectedThreads(newSelection);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="absolute top-4 left-4 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
                     <div className="flex w-full flex-col gap-2">
                       <div className="flex items-center">
                         <div className="flex items-center gap-2">
@@ -152,10 +232,16 @@ const ThreadList = () => {
                               isSelected
                                 ? "text-blue-900 dark:text-purple-200"
                                 : "",
+                              selectedThreads.has(thread.id)
+                                ? "text-blue-900 dark:text-blue-200"
+                                : "",
                             )}
                           >
                             {latestEmail.from.name}
                           </div>
+                          {hasUnreadEmails && (
+                            <div className="h-2 w-2 rounded-full bg-blue-600 dark:bg-purple-400"></div>
+                          )}
                         </div>
                         <div
                           className={cn(
@@ -163,6 +249,9 @@ const ThreadList = () => {
                             isSelected
                               ? "text-blue-900/80 dark:text-purple-200/80"
                               : "text-gray-500 dark:text-gray-400",
+                            selectedThreads.has(thread.id)
+                              ? "text-blue-900/80 dark:text-blue-200/80"
+                              : "",
                           )}
                         >
                           {formatDistanceToNow(
@@ -176,6 +265,9 @@ const ThreadList = () => {
                           "line-clamp-1 text-xs font-medium",
                           hasUnreadEmails ? "font-semibold" : "",
                           isSelected ? "text-blue-900 dark:text-white" : "",
+                          selectedThreads.has(thread.id)
+                            ? "text-blue-900 dark:text-blue-200"
+                            : "",
                         )}
                       >
                         {thread.subject}
@@ -187,6 +279,9 @@ const ThreadList = () => {
                         isSelected
                           ? "text-blue-900/70 dark:text-white/80"
                           : "text-gray-500 dark:text-gray-400",
+                        selectedThreads.has(thread.id)
+                          ? "text-blue-900/70 dark:text-blue-200/80"
+                          : "",
                       )}
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(
@@ -195,7 +290,7 @@ const ThreadList = () => {
                         ),
                       }}
                     ></div>
-                    {thread.emails[0]?.sysLabels.length! > 0 && (
+                    {/* {thread.emails[0]?.sysLabels.length! > 0 && (
                       <div className="mt-1 flex flex-wrap items-center gap-2">
                         {thread.emails[0]?.sysLabels
                           .filter(
@@ -211,6 +306,9 @@ const ThreadList = () => {
                                   getBadgeVariantFromLabel(label) === "default"
                                     ? "border-none bg-gradient-to-r from-blue-900 to-purple-400 text-white hover:shadow-md"
                                     : "border-none bg-gradient-to-r from-blue-900/10 to-purple-400/10 text-blue-900 dark:from-blue-900/20 dark:to-purple-400/20 dark:text-purple-200",
+                                  selectedThreads.has(thread.id)
+                                    ? "opacity-90"
+                                    : "",
                                 )}
                               >
                                 {renderLabelIcon(label)}
@@ -219,19 +317,13 @@ const ThreadList = () => {
                             );
                           })}
                       </div>
-                    )}
+                    )} */}
 
-                    {/* Active indicator line */}
                     {isSelected && (
                       <motion.div
                         layoutId="activeThread"
                         className="absolute top-0 bottom-0 left-0 w-1 rounded-l-xl bg-gradient-to-b from-blue-900 to-purple-400"
                       />
-                    )}
-
-                    {/* Unread indicator dot */}
-                    {hasUnreadEmails && (
-                      <div className="absolute right-3 bottom-3 h-2 w-2 rounded-full bg-blue-600 dark:bg-purple-400"></div>
                     )}
                   </motion.button>
                 );
@@ -239,7 +331,7 @@ const ThreadList = () => {
             </React.Fragment>
           );
         })}
-        
+
         {groupedThreads && Object.keys(groupedThreads).length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}

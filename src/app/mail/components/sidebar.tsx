@@ -67,7 +67,7 @@ const Sidebar = ({ isCollapsed, toggleCollapse }: Props) => {
   const [_, setTab] = useLocalStorage("hypermail-tab", "inbox");
   const [accountId, setAccountId] = useLocalStorage("accountId", "");
   const [tab] = useLocalStorage<
-    "inbox" | "drafts" | "sent" | "archive" | "trash" | "star" | "spam"
+    "inbox" | "drafts" | "sent" | "archive" | "trash" | "star" | "spam" | "unread"
   >("hypermail-tab", "inbox");
 
   const { data: counts } = api.thread.getThreadCounts.useQuery(

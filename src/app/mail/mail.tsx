@@ -85,7 +85,7 @@ const Mail = ({
                       Inbox
                     </TabsTrigger>
                     <TabsTrigger
-                      value="done"
+                      value="unread"
                       className="text-zinc-600 dark:text-zinc-200"
                       onClick={() => setTab("unread" as any)}
                     >
@@ -115,15 +115,13 @@ const Mail = ({
                   <TabsContent value="star" className="m-0 h-full p-0">
                     <ThreadList />
                   </TabsContent>
-                  <TabsContent value="done" className="m-0 h-full p-0">
+                  <TabsContent value="unread" className="m-0 h-full p-0">
                     <ThreadList />
                   </TabsContent>
                 </div>
               </Tabs>
             </ResizablePanel>
-
             <ResizableHandle withHandle />
-
             {/* Thread Display Panel */}
             <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
               <ThreadDisplay />

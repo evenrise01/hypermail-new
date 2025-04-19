@@ -305,10 +305,6 @@ export const accountRouter = createTRPCRouter({
         break;
     }
 
-    // Add done filter (keep your existing done filter logic)
-    // filter.done = {
-    //   equals: input.done,
-    // };
     const results =await ctx.db.thread.findMany({
       where: filter,
       include: {

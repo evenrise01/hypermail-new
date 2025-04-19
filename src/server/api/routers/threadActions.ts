@@ -370,7 +370,6 @@ export const threadActionsRouter = createTRPCRouter({
       }),
     ]);
 
-    console.log("Spammed: ", spammed)
     return { 
       inbox,
       archived, 
