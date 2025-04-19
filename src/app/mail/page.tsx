@@ -3,6 +3,7 @@
 import { ThemeToggle } from "@/components/theme-toggle";
 import dynamic from "next/dynamic";
 import React from "react";
+import HypermailLoader from "./hypermail-loader";
 
 // Dynamically import the Mail component with SSR disabled
 const Mail = dynamic(() => import("./mail"), {
@@ -12,7 +13,9 @@ const Mail = dynamic(() => import("./mail"), {
 const MailDashboard = () => {
   return (
     <>
-      <Mail defaultLayout={[40, 60]} />
+      <HypermailLoader>
+        <Mail defaultLayout={[40, 60]} />
+      </HypermailLoader>
     </>
   );
 };

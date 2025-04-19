@@ -22,26 +22,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // const isSubscribed = await getSubscriptionStatus()
-    //     if (!isSubscribed) {
-    //         const chatbotInteraction = await db.chatbotInteraction.findUnique({
-    //             where: {
-    //                 day: new Date().toDateString(),
-    //                 userId
-    //             }
-    //         })
-    //         if (!chatbotInteraction) {
-    //             await db.chatbotInteraction.create({
-    //                 data: {
-    //                     day: new Date().toDateString(),
-    //                     count: 1,
-    //                     userId
-    //                 }
-    //             })
-    //         } else if (chatbotInteraction.count >= FREE_CREDITS_PER_DAY) {
-    //             return NextResponse.json({ error: "Limit reached" }, { status: 429 });
-    //         }
-    //     }
+    const isSubscribed = await getSubscriptionStatus()
+        if (!isSubscribed) {
+            const chatbotInteraction = await db.chatbotInteraction.findUnique({
+                where: {
+                    day: new Date().toDateString(),
+                    userId
+                }
+            })
+            if (!chatbotInteraction) {
+                await db.chatbotInteraction.create({
+                    data: {
+                        day: new Date().toDateString(),
+                        count: 1,
+                        userId
+                    }
+                })
+            } else if (chatbotInteraction.count >= FREE_CREDITS_PER_DAY) {
+                return NextResponse.json({ error: "Limit reached" }, { status: 429 });
+            }
+        }
     const { messages, accountId }: { messages: Message[]; accountId: string } =
       await req.json();
 
@@ -107,6 +107,20 @@ When responding, please keep in mind:
     const geminiStream = await streamText({
       model: google("gemini-1.5-flash"),
       messages: messagesForApi,
+      onFinish: async (completion) => {
+        const today = new Date().toDateString()
+        await db.chatbotInteraction.update({
+          where: {
+            userId,
+            day: today
+          },
+          data: {
+            count: {
+              increment: 1
+            }
+          }
+        })
+      }
     });
 
     // Convert the stream to a proper Response
