@@ -18,22 +18,19 @@ interface NavProps {
 }
 
 const PremiumBanner = ({ isCollapsed }: NavProps) => {
-    // const [isSubscribed, setIsSubscribed] = React.useState(false)
-    // React.useEffect(() => {
-    //     (async () => {
-    //         const subscriptionStatus = await getSubscriptionStatus()
-    //         setIsSubscribed(subscriptionStatus)
-    //     })()
-    // }, [])
+    const [isSubscribed, setIsSubscribed] = React.useState(false)
+    React.useEffect(() => {
+        (async () => {
+            const subscriptionStatus = await getSubscriptionStatus()
+            setIsSubscribed(subscriptionStatus)
+        })()
+    }, [])
 
-    // const { data: chatbotInteraction } = api.account.getChatbotInteraction.useQuery()
-    // const remainingCredits = chatbotInteraction?.remainingCredits || 0
-    const remainingCredits = FREE_CREDITS_PER_DAY; // Using the constant for now, would be replaced with actual data
+    const { data: chatbotInteraction } = api.account.getChatbotInteraction.useQuery()
+    const remainingCredits = chatbotInteraction?.remainingCredits || 0
 
-    const botImage = "/bot.webp";
 
-    // Premium plan (currently disabled with the false condition)
-    if (false) {
+    if (isSubscribed) {
         return (
             <TooltipProvider>
                 <Tooltip>
