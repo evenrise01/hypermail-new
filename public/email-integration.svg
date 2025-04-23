@@ -1,0 +1,47 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .envelope { transform-origin: 50% 50%; animation: float 3s ease-in-out infinite alternate; }
+    .gmail { transform-origin: center; animation: pulse 2s ease infinite; }
+    .outlook { transform-origin: center; animation: pulse 2s ease infinite 0.5s; }
+    .connecting-line { stroke-dasharray: 100; stroke-dashoffset: 100; animation: draw 1.5s ease-in-out forwards 0.5s; }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+  </style>
+  
+  <!-- Envelope -->
+  <g class="envelope">
+    <path d="M200 100L100 50L100 200L200 250L300 200L300 50L200 100Z" fill="#6366F1" fill-opacity="0.2" stroke="#6366F1" stroke-width="2"/>
+    <path d="M100 50L200 100L300 50" stroke="#6366F1" stroke-width="2"/>
+  </g>
+  
+  <!-- Gmail Icon -->
+  <g class="gmail" transform="translate(120 150)">
+    <rect x="10" y="10" width="40" height="30" rx="4" fill="#EA4335"/>
+    <path d="M10 10L30 25L50 10" stroke="white" stroke-width="2" fill="none"/>
+    <text x="30" y="45" font-family="Arial" font-size="10" fill="#6366F1" text-anchor="middle">Gmail</text>
+  </g>
+  
+  <!-- Outlook Icon -->
+  <g class="outlook" transform="translate(230 150)">
+    <rect x="10" y="10" width="40" height="30" rx="4" fill="#0072C6"/>
+    <circle cx="30" cy="25" r="8" fill="white"/>
+    <text x="30" y="45" font-family="Arial" font-size="10" fill="#6366F1" text-anchor="middle">Outlook</text>
+  </g>
+  
+  <!-- Connecting Lines -->
+  <path class="connecting-line" d="M170 130Q200 110 230 130" stroke="#A5B4FC" stroke-width="2" stroke-dasharray="100" fill="none"/>
+  <path class="connecting-line" d="M170 170Q200 190 230 170" stroke="#A5B4FC" stroke-width="2" stroke-dasharray="100" fill="none"/>
+  
+  <!-- Animation Trigger -->
+  <rect width="400" height="300" fill="transparent" onmouseover="document.querySelectorAll('.envelope, .gmail, .outlook').forEach(el => el.style.animationPlayState='running')" onmouseout="document.querySelectorAll('.envelope, .gmail, .outlook').forEach(el => el.style.animationPlayState='paused')"/>
+</svg>
