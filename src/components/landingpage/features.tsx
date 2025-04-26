@@ -8,7 +8,7 @@ export default function Features() {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [selectedTab, setSelectedTab] = useState('upcoming');
   const integrations = [
-    { icon: "/api/placeholder/32/32", name: "Slack" },
+    { icon: "/public/google.svg", name: "Google" },
     { icon: "/api/placeholder/32/32", name: "Gmail" },
     { icon: "/api/placeholder/32/32", name: "Calendar" },
     { icon: "/api/placeholder/32/32", name: "Drive" },
@@ -20,7 +20,7 @@ export default function Features() {
     <section className="relative overflow-hidden py-24 md:py-32">
       <div className="mb-8 py-4 text-center">
         <h2 className="text-4xl font-semibold text-balance lg:text-5xl">
-          Built to cover your needs
+          Built to cover <span className="bg-gradient-to-r from-purple-200 to-pink-400 bg-clip-text text-transparent"> your needs</span>
         </h2>
         <p className="mt-4">
           Libero sapiente aliquam quibusdam aspernatur, praesentium iusto

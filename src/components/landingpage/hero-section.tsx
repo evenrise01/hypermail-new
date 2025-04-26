@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { TextEffect } from "@/components/motion-primitives/text-effect"
 import { AnimatedGroup } from "@/components/motion-primitives/animated-group"
+import HypermailAppMockup from "./hypermail-ui-mockup"
 
 const transitionVariants = {
   item: {
@@ -161,148 +162,8 @@ export default function HeroSection() {
                 />
                 <div className="inset-shadow-2xs ring-background dark:inset-shadow-indigo-400/10 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-indigo-200/40 dark:border-indigo-800/40 p-4 shadow-lg shadow-indigo-950/15 ring-1">
                   {/* Hypermail UI mockup - dark mode */}
-                  <div className="bg-gray-900 aspect-15/8 relative hidden rounded-2xl dark:block overflow-hidden">
-                    <div className="h-12 bg-gray-800 flex items-center px-4 border-b border-gray-700">
-                      <div className="flex space-x-2 mr-4">
-                        <div className="rounded-full h-3 w-3 bg-red-500"></div>
-                        <div className="rounded-full h-3 w-3 bg-yellow-500"></div>
-                        <div className="rounded-full h-3 w-3 bg-green-500"></div>
-                      </div>
-                      <div className="flex-1 flex items-center justify-between">
-                        <div className="flex items-center">
-                          <Mail className="text-indigo-400 size-5 mr-2" />
-                          <span className="text-white font-medium">Hypermail</span>
-                        </div>
-                        <div className="bg-gray-700 rounded-full px-3 py-1 text-xs text-indigo-300 flex items-center">
-                          <Sparkles className="size-3 mr-1" /> AI-Powered
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex h-[calc(100%-3rem)]">
-                      <div className="w-56 bg-gray-800 p-3 border-r border-gray-700">
-                        <div className="bg-indigo-600 text-white rounded-lg px-3 py-2 mb-6 flex items-center justify-between">
-                          <span className="font-medium">Compose</span>
-                          <Zap className="size-4" />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="bg-gray-700/50 rounded-md px-3 py-2 text-white flex items-center justify-between">
-                            <span>Inbox</span>
-                            <span className="bg-indigo-500 text-xs rounded-full px-2">24</span>
-                          </div>
-                          <div className="text-gray-400 rounded-md px-3 py-2 hover:bg-gray-700/30 transition-colors">Sent</div>
-                          <div className="text-gray-400 rounded-md px-3 py-2 hover:bg-gray-700/30 transition-colors">Drafts</div>
-                          <div className="text-gray-400 rounded-md px-3 py-2 hover:bg-gray-700/30 transition-colors">
-                            <div className="flex items-center">
-                              <Shield className="size-4 mr-2" />
-                              <span>Security</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex-1 flex flex-col">
-                        <div className="bg-gray-800/50 p-3 border-b border-gray-700">
-                          <div className="bg-gray-700 rounded-lg w-full p-2 flex items-center">
-                            <input className="bg-transparent border-none flex-1 text-gray-300 text-sm outline-none placeholder:text-gray-500" placeholder="Search emails..." />
-                            <span className="text-indigo-400 text-xs">AI Search</span>
-                          </div>
-                        </div>
-                        <div className="flex-1 overflow-auto p-2">
-                          <div className="space-y-2">
-                            {[1, 2, 3].map((i) => (
-                              <div key={i} className="bg-gray-800 rounded-lg p-3 hover:bg-gray-750 transition-colors cursor-pointer">
-                                <div className="flex justify-between items-center mb-1">
-                                  <span className="font-medium text-white">Product Update</span>
-                                  <span className="text-gray-400 text-xs">10:45 AM</span>
-                                </div>
-                                <div className="text-gray-400 text-sm">
-                                  Introducing new AI features to help you manage your inbox more efficiently...
-                                </div>
-                                <div className="mt-2 flex justify-between items-center">
-                                  <div className="flex items-center">
-                                    <div className="size-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs mr-2">H</div>
-                                    <span className="text-gray-300 text-xs">Hypermail Team</span>
-                                  </div>
-                                  <div className="bg-indigo-500/20 text-indigo-300 text-xs rounded-full px-2 py-0.5">New</div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Hypermail UI mockup - light mode */}
-                  <div className="bg-white aspect-15/8 relative rounded-2xl dark:hidden overflow-hidden border border-gray-200">
-                    <div className="h-12 bg-gray-50 flex items-center px-4 border-b border-gray-200">
-                      <div className="flex space-x-2 mr-4">
-                        <div className="rounded-full h-3 w-3 bg-red-500"></div>
-                        <div className="rounded-full h-3 w-3 bg-yellow-500"></div>
-                        <div className="rounded-full h-3 w-3 bg-green-500"></div>
-                      </div>
-                      <div className="flex-1 flex items-center justify-between">
-                        <div className="flex items-center">
-                          <Mail className="text-indigo-600 size-5 mr-2" />
-                          <span className="text-gray-800 font-medium">Hypermail</span>
-                        </div>
-                        <div className="bg-indigo-50 rounded-full px-3 py-1 text-xs text-indigo-600 flex items-center">
-                          <Sparkles className="size-3 mr-1" /> AI-Powered
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex h-[calc(100%-3rem)]">
-                      <div className="w-56 bg-gray-50 p-3 border-r border-gray-200">
-                        <div className="bg-indigo-600 text-white rounded-lg px-3 py-2 mb-6 flex items-center justify-between">
-                          <span className="font-medium">Compose</span>
-                          <Zap className="size-4" />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="bg-indigo-50 rounded-md px-3 py-2 text-indigo-800 flex items-center justify-between">
-                            <span>Inbox</span>
-                            <span className="bg-indigo-500 text-white text-xs rounded-full px-2">24</span>
-                          </div>
-                          <div className="text-gray-700 rounded-md px-3 py-2 hover:bg-gray-100 transition-colors">Sent</div>
-                          <div className="text-gray-700 rounded-md px-3 py-2 hover:bg-gray-100 transition-colors">Drafts</div>
-                          <div className="text-gray-700 rounded-md px-3 py-2 hover:bg-gray-100 transition-colors">
-                            <div className="flex items-center">
-                              <Shield className="size-4 mr-2" />
-                              <span>Security</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex-1 flex flex-col">
-                        <div className="bg-white p-3 border-b border-gray-200">
-                          <div className="bg-gray-100 rounded-lg w-full p-2 flex items-center">
-                            <input className="bg-transparent border-none flex-1 text-gray-700 text-sm outline-none placeholder:text-gray-400" placeholder="Search emails..." />
-                            <span className="text-indigo-600 text-xs">AI Search</span>
-                          </div>
-                        </div>
-                        <div className="flex-1 overflow-auto p-2">
-                          <div className="space-y-2">
-                            {[1, 2, 3].map((i) => (
-                              <div key={i} className="bg-white rounded-lg p-3 border border-gray-200 hover:shadow-md transition-all cursor-pointer">
-                                <div className="flex justify-between items-center mb-1">
-                                  <span className="font-medium text-gray-800">Product Update</span>
-                                  <span className="text-gray-500 text-xs">10:45 AM</span>
-                                </div>
-                                <div className="text-gray-600 text-sm">
-                                  Introducing new AI features to help you manage your inbox more efficiently...
-                                </div>
-                                <div className="mt-2 flex justify-between items-center">
-                                  <div className="flex items-center">
-                                    <div className="size-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs mr-2">H</div>
-                                    <span className="text-gray-500 text-xs">Hypermail Team</span>
-                                  </div>
-                                  <div className="bg-indigo-100 text-indigo-600 text-xs rounded-full px-2 py-0.5">New</div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <HypermailAppMockup/>
+
                 </div>
               </div>
             </AnimatedGroup>
