@@ -11,8 +11,8 @@ export default function Testimonials() {
         {
             id: 1,
             company: {
-                name: "Acme Corp",
-                logo: "/api/placeholder/120/24"
+                name: "Hypermail",
+                logo: "gemini.svg"
             },
             quote: "Hypermail has transformed our team's communication workflow. The AI-powered features have cut our email processing time by 60%. It's like having a personal assistant that understands exactly what we need.",
             author: {

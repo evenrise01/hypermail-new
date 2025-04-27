@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, ChevronRight, Mail, Sparkles, Zap, Shield } from "lucide-react"
+import { ArrowRight, ChevronRight, Mail} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { TextEffect } from "@/components/motion-primitives/text-effect"

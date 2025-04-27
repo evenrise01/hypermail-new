@@ -5,143 +5,85 @@ import { Mail, Clock, Target, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const HypermailProblemStatement = () => {
-    const [scrollY, setScrollY] = useState(0)
     const [isHovered, setIsHovered] = useState(false)
     const [isInView, setIsInView] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
     
     // Refs for animated elements
-    const sectionRef = useRef(null)
-    const contentRef = useRef(null)
-    const imageRef = useRef(null)
-    const featureRefs = useRef([])
+    const sectionRef = useRef<HTMLDivElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+    const imageRef = useRef<HTMLDivElement>(null)
     
     useEffect(() => {
-        const handleScroll = () => {
-            setScrollY(window.scrollY)
+        // Check if mobile
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768)
         }
         
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
     }, [])
 
     useEffect(() => {
-        // Intersection Observer for the entire section
-        const sectionObserver = new IntersectionObserver(
+        const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach(entry => {
                     setIsInView(entry.isIntersecting)
                 })
             },
-            { threshold: 0.1 } // Trigger when 10% of the section is visible
+            { threshold: 0.1 }
         )
         
         if (sectionRef.current) {
-            sectionObserver.observe(sectionRef.current)
+            observer.observe(sectionRef.current)
         }
         
         return () => {
             if (sectionRef.current) {
-                sectionObserver.unobserve(sectionRef.current)
+                observer.unobserve(sectionRef.current)
             }
         }
     }, [])
     
-    // Staggered animation for features
-    useEffect(() => {
-        const featureObserver = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry, index) => {
-                    if (entry.isIntersecting) {
-                        // Add a staggered delay for each feature
-                        setTimeout(() => {
-                            entry.target.classList.add('animate-feature-in')
-                            entry.target.classList.remove('opacity-0', 'translate-y-8')
-                        }, index * 150)
-                    } else {
-                        entry.target.classList.remove('animate-feature-in')
-                        entry.target.classList.add('opacity-0', 'translate-y-8')
-                    }
-                })
-            },
-            { threshold: 0.2, rootMargin: "-50px" }
-        )
-        
-        featureRefs.current.forEach(ref => {
-            if (ref) {
-                featureObserver.observe(ref)
-            }
-        })
-        
-        return () => {
-            featureRefs.current.forEach(ref => {
-                if (ref) {
-                    featureObserver.unobserve(ref)
-                }
-            })
+    // Simple staggered animation for features
+    const featureItems = [
+        {
+            icon: <Mail className="size-4 text-blue-400" />,
+            title: "Smart Inbox",
+            description: "AI-powered email categorization and prioritization"
+        },
+        {
+            icon: <Clock className="size-4 text-indigo-400" />,
+            title: "Save Time",
+            description: "Cut your email time by 50% with AI assistance"
+        },
+        {
+            icon: <Target className="size-4 text-purple-400" />,
+            title: "Never Miss",
+            description: "Automated follow-ups and response tracking"
         }
-    }, [])
-    
-    const parallaxOffset = scrollY * 0.05
-    
-    // Calculate opacity based on scroll position
-    const calculateOpacity = (baseOpacity = 1) => {
-        if (!sectionRef.current) return baseOpacity
-        
-        const rect = sectionRef.current.getBoundingClientRect()
-        const viewportHeight = window.innerHeight
-        
-        // When section is entering from bottom
-        if (rect.top < viewportHeight && rect.top > 0) {
-            return baseOpacity * (1 - (rect.top / viewportHeight) * 0.8)
-        }
-        // When section is leaving from top
-        else if (rect.bottom < viewportHeight && rect.bottom > 0) {
-            return baseOpacity * (rect.bottom / viewportHeight)
-        }
-        // When section is fully in view
-        else if (rect.top <= 0 && rect.bottom >= viewportHeight) {
-            return baseOpacity
-        }
-        // When section is not in view
-        else {
-            return 0
-        }
-    }
-    
-    // Add a feature to the refs
-    const addToFeatureRefs = (el, index) => {
-        if (el && !featureRefs.current.includes(el)) {
-            featureRefs.current[index] = el
-        }
-    }
+    ]
 
     return (
         <section 
             ref={sectionRef}
-            className={`relative py-20 md:py-32 overflow-hidden transition-opacity duration-700 ease-in-out ${isInView ? 'opacity-100' : 'opacity-0'}`}
+            className="relative py-20 md:py-32 overflow-hidden"
         >
-            {/* Background gradients with animation controlled by scroll */}
-            <div className="absolute inset-0 overflow-hidden transition-all duration-1000" 
-                style={{ opacity: calculateOpacity(0.8) }}>
+            {/* Background gradients */}
+            <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-500/20 blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-0 left-16 w-80 h-80 rounded-full bg-indigo-600/20 blur-3xl animate-pulse" 
-                    style={{ 
-                        animationDelay: '1s',
-                        transform: `translate(${scrollY * -0.02}px, ${scrollY * 0.01}px)` 
-                    }}></div>
+                    style={{ animationDelay: '1s' }}></div>
                 <div className="absolute top-1/4 left-1/3 w-64 h-64 rounded-full bg-purple-600/10 blur-3xl animate-pulse" 
-                    style={{ 
-                        animationDelay: '2s',
-                        transform: `translate(${scrollY * 0.01}px, ${scrollY * -0.015}px)` 
-                    }}></div>
+                    style={{ animationDelay: '2s' }}></div>
             </div>
             
             <div className="mx-auto max-w-6xl px-6 relative z-10">
                 <div className="grid md:grid-cols-2 gap-12 md:gap-8 items-center">
                     <div 
                         ref={contentRef}
-                        className={`space-y-8 transition-all duration-1000 ease-out ${isInView ? 'translate-x-0 opacity-100' : '-translate-x-12 opacity-0'}`}
-                        style={{ transitionDelay: '200ms' }}
+                        className="space-y-8"
                     >
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight">
                             <span className="text-white">Email is the </span>
@@ -154,23 +96,20 @@ const HypermailProblemStatement = () => {
                             </span>
                         </h1>
                         
-                        <p className={`text-zinc-400 text-lg md:text-xl max-w-lg transition-all duration-700 ease-out ${isInView ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-                           style={{ transitionDelay: '300ms' }}>
+                        <p className="text-zinc-400 text-lg md:text-xl max-w-lg">
                             We all spend hours on email. But we often reply late, and sometimes don't even reply.
                             We then end up losing deals, blocking our teams, and missing our goals.
                         </p>
                         
-                        <p className={`text-zinc-400 text-lg md:text-xl max-w-lg transition-all duration-700 ease-out ${isInView ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-                           style={{ transitionDelay: '400ms' }}>
+                        <p className="text-zinc-400 text-lg md:text-xl max-w-lg">
                             It's not anybody's fault. Email itself has not changed in decades.
                             <span className="text-white font-medium"> With Hypermail, this all changes.</span>
                         </p>
                         
-                        <div className={`flex flex-col sm:flex-row gap-4 pt-4 transition-all duration-700 ease-out ${isInView ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-                             style={{ transitionDelay: '500ms' }}>
+                        <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <Button 
                                 size="lg" 
-                                className={`bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-none relative overflow-hidden group transition-all duration-300 ${isInView ? 'scale-100' : 'scale-95'}`}
+                                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-none relative overflow-hidden group transition-all duration-300"
                                 onMouseEnter={() => setIsHovered(true)}
                                 onMouseLeave={() => setIsHovered(false)}
                             >
@@ -180,58 +119,43 @@ const HypermailProblemStatement = () => {
                             <Button 
                                 size="lg" 
                                 variant="outline" 
-                                className={`border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-all duration-300 ${isInView ? 'scale-100' : 'scale-95'}`}
-                                style={{ transitionDelay: '50ms' }}
+                                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-all duration-300"
                             >
                                 See How It Works
                             </Button>
                         </div>
                         
-                        <div className={`grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-zinc-800 mt-10 transition-all duration-700 ${isInView ? 'opacity-100' : 'opacity-0'}`}
-                             style={{ transitionDelay: '600ms' }}>
-                            <div 
-                                ref={(el) => addToFeatureRefs(el, 0)}
-                                className="space-y-2 transition-all duration-500 opacity-0 translate-y-8 hover:translate-y-[-4px]"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <Mail className="size-4 text-blue-400" />
-                                    <h3 className="text-sm font-medium text-white">Smart Inbox</h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-zinc-800 mt-10">
+                            {featureItems.map((feature, index) => (
+                                <div 
+                                    key={index}
+                                    className={`space-y-2 transition-all duration-500 hover:translate-y-[-4px] will-change-transform ${
+                                        isInView 
+                                            ? 'opacity-100 translate-y-0' 
+                                            : 'opacity-0 translate-y-8'
+                                    }`}
+                                    style={{
+                                        transitionDelay: `${index * 100 + 300}ms`
+                                    }}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        {feature.icon}
+                                        <h3 className="text-sm font-medium text-white">{feature.title}</h3>
+                                    </div>
+                                    <p className="text-zinc-400 text-sm">{feature.description}</p>
                                 </div>
-                                <p className="text-zinc-400 text-sm">AI-powered email categorization and prioritization</p>
-                            </div>
-                            <div 
-                                ref={(el) => addToFeatureRefs(el, 1)}
-                                className="space-y-2 transition-all duration-500 opacity-0 translate-y-8 hover:translate-y-[-4px]"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <Clock className="size-4 text-indigo-400" />
-                                    <h3 className="text-sm font-medium text-white">Save Time</h3>
-                                </div>
-                                <p className="text-zinc-400 text-sm">Cut your email time by 50% with AI assistance</p>
-                            </div>
-                            <div 
-                                ref={(el) => addToFeatureRefs(el, 2)}
-                                className="space-y-2 col-span-2 sm:col-span-1 transition-all duration-500 opacity-0 translate-y-8 hover:translate-y-[-4px]"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <Target className="size-4 text-purple-400" />
-                                    <h3 className="text-sm font-medium text-white">Never Miss</h3>
-                                </div>
-                                <p className="text-zinc-400 text-sm">Automated follow-ups and response tracking</p>
-                            </div>
+                            ))}
                         </div>
                     </div>
                     
                     <div 
                         ref={imageRef}
-                        className={`relative transition-all duration-1000 ease-out ${isInView ? 'translate-x-0 opacity-100 rotate-0' : 'translate-x-12 opacity-0 rotate-2'}`}
-                        style={{
-                            transform: isInView ? `translateY(${-parallaxOffset}px)` : 'translateY(20px) translateX(12px) rotate(2deg)',
-                            transitionDelay: '400ms'
-                        }}
+                        className="relative will-change-transform"
                     >
                         <div 
-                            className={`absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur opacity-30 animate-pulse transition-opacity duration-700 ${isInView ? 'opacity-30' : 'opacity-0'}`}
+                            className={`absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur animate-pulse ${
+                                isInView ? 'opacity-30' : 'opacity-0'
+                            } transition-opacity duration-700`}
                         ></div>
                         <div className="relative z-10 rounded-2xl border border-zinc-700/50 bg-zinc-900/90 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-indigo-500/10 hover:border-zinc-600/60">
                             <div className="h-10 bg-zinc-800/70 flex items-center px-4 gap-2">
@@ -244,8 +168,12 @@ const HypermailProblemStatement = () => {
                             </div>
                             <div className="p-4">
                                 <div className="space-y-3">
-                                    <div className={`flex items-center gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 transition-all duration-500 hover:bg-blue-500/15 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
-                                         style={{ transitionDelay: '600ms' }}>
+                                    <div 
+                                        className={`flex items-center gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 transition-all duration-500 hover:bg-blue-500/15 ${
+                                            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+                                        }`}
+                                        style={{ transitionDelay: '300ms' }}
+                                    >
                                         <div className="bg-blue-500/20 p-2 rounded-full animate-pulse">
                                             <Sparkles className="h-4 w-4 text-blue-400" />
                                         </div>
@@ -257,8 +185,10 @@ const HypermailProblemStatement = () => {
                                     {[1, 2, 3].map((item) => (
                                         <div 
                                             key={item} 
-                                            className={`p-3 rounded-lg bg-zinc-800/50 border border-zinc-700/50 flex justify-between items-center transition-all duration-500 hover:bg-zinc-800/70 hover:border-zinc-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                                            style={{ transitionDelay: `${600 + (item * 200)}ms` }}
+                                            className={`p-3 rounded-lg bg-zinc-800/50 border border-zinc-700/50 flex justify-between items-center transition-all duration-500 hover:bg-zinc-800/70 hover:border-zinc-700 ${
+                                                isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                                            }`}
+                                            style={{ transitionDelay: `${300 + (item * 100)}ms` }}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded-full bg-zinc-700"></div>
@@ -271,8 +201,12 @@ const HypermailProblemStatement = () => {
                                         </div>
                                     ))}
                                     
-                                    <div className={`mt-4 flex items-center justify-between transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                                         style={{ transitionDelay: '1200ms' }}>
+                                    <div 
+                                        className={`mt-4 flex items-center justify-between transition-all duration-500 ${
+                                            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                                        }`}
+                                        style={{ transitionDelay: '600ms' }}
+                                    >
                                         <div className="h-2 w-20 bg-zinc-700/50 rounded"></div>
                                         <div className="flex gap-2">
                                             <div className="h-6 w-6 rounded-full bg-zinc-700/50"></div>
@@ -283,42 +217,29 @@ const HypermailProblemStatement = () => {
                             </div>
                         </div>
                         
-                        {/* Decorative elements with scroll-based movement */}
-                        <div 
-                            className={`absolute -z-10 -right-4 -bottom-6 w-20 h-20 bg-indigo-500/30 rounded-full blur-xl animate-pulse transition-all duration-700 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
-                            style={{ 
-                                transform: `translate(${scrollY * 0.03}px, ${scrollY * -0.02}px) scale(${isInView ? 1 : 1})`,
-                                transitionDelay: '200ms'
-                            }}
-                        ></div>
-                        <div 
-                            className={`absolute -z-10 -left-8 top-1/2 w-16 h-16 bg-blue-500/20 rounded-full blur-lg animate-pulse transition-all duration-700 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-100'}`}
-                            style={{ 
-                                animationDelay: '1.0s',
-                                transform: `translate(${scrollY * -0.02}px, ${scrollY * 0.02}px) scale(${isInView ? 1 : 1})`,
-                                transitionDelay: '200ms'
-                            }}
-                        ></div>
+                        {/* Decorative elements - only on desktop */}
+                        {!isMobile && (
+                            <>
+                                <div 
+                                    className={`absolute -z-10 -right-4 -bottom-6 w-20 h-20 bg-indigo-500/30 rounded-full blur-xl animate-pulse transition-opacity duration-700 ${
+                                        isInView ? 'opacity-100' : 'opacity-0'
+                                    }`}
+                                    style={{ transitionDelay: '300ms' }}
+                                ></div>
+                                <div 
+                                    className={`absolute -z-10 -left-8 top-1/2 w-16 h-16 bg-blue-500/20 rounded-full blur-lg animate-pulse transition-opacity duration-700 ${
+                                        isInView ? 'opacity-100' : 'opacity-0'
+                                    }`}
+                                    style={{ 
+                                        animationDelay: '1.5s',
+                                        transitionDelay: '400ms'
+                                    }}
+                                ></div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
-            
-            {/* Add this keyframes animation to your global CSS */}
-            <style jsx>{`
-                @keyframes featureIn {
-                    0% {
-                        opacity: 0;
-                        transform: translateY(8px);
-                    }
-                    100% {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                .animate-feature-in {
-                    animation: featureIn 0.5s forwards ease-out;
-                }
-            `}</style>
         </section>
     )
 }
