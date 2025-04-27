@@ -8,12 +8,12 @@ export default function Features() {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [selectedTab, setSelectedTab] = useState('upcoming');
   const integrations = [
-    { icon: "/public/google.svg", name: "Google" },
-    { icon: "/api/placeholder/32/32", name: "Gmail" },
-    { icon: "/api/placeholder/32/32", name: "Calendar" },
-    { icon: "/api/placeholder/32/32", name: "Drive" },
-    { icon: "/api/placeholder/32/32", name: "Notion" },
-    { icon: "/api/placeholder/32/32", name: "Teams" },
+    { icon: "/google.svg", name: "Google" },
+    { icon: "/gmail.svg", name: "Gmail" },
+    { icon: "/google-calendar.svg", name: "Google Calendar" },
+    { icon: "/outlook.svg", name: "Outlook" },
+    { icon: "/microsoft.svg", name: "Microsoft" },
+    { icon: "/microsoft-teams.svg", name: "Teams" },
   ];
 
   return (
@@ -481,7 +481,7 @@ export default function Features() {
             </CardHeader>
 
             <CardContent className="px-6 pb-6 md:px-8 md:pb-8">
-              <div className="grid grid-cols-3 gap-3 md:grid-cols-6">
+              <div className="grid grid-cols-3 gap-3 md:grid-cols-6 justify-between">
                 {integrations.map((integration, index) => (
                   <div
                     key={index}
@@ -491,7 +491,7 @@ export default function Features() {
                         : ""
                     }`}
                   >
-                    <img
+                    <Image
                       className="size-8"
                       src={integration.icon}
                       alt={`${integration.name} logo`}

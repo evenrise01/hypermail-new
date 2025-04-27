@@ -1,5 +1,4 @@
 'use client'
-import { Logo } from '@/components/logo'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -153,7 +152,12 @@ export default function FooterSection() {
                             href="/"
                             aria-label="go home"
                             className="group block size-fit">
-                            <Logo />
+                            <img
+                            src = "/HM_square.png"
+                            width={50}
+                            height={50}
+                            alt = "logo"
+                            />
                             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-500 transition-colors duration-300">
                                 Hypermail — Your new futuristic AI Email Client
                             </p>
