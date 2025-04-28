@@ -9,7 +9,6 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import TagInput from "./tag-input";
 import { Input } from "@/components/ui/input";
-import { useTheme } from "next-themes";
 import AIComposeButton from "./ai-compose-button";
 import { generate } from "./action";
 import { readStreamableValue } from "ai/rsc";

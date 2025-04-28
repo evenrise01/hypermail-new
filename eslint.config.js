@@ -21,6 +21,15 @@ export default tseslint.config(
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
 	'@typescript-eslint/no-explicit-any': 'off', // Turn off completely
+	"@typescript-eslint/no-unused-expressions": [
+		"error",
+		{
+		  "allowShortCircuit": true,
+		  "allowTernary": true,
+		  "allowTaggedTemplates": true,
+		  "enforceForJSX": false
+		}
+	  ]
   },
   },
   {

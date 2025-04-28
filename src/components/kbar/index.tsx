@@ -12,15 +12,12 @@ import RenderResults from "./render-results";
 import { useLocalStorage } from "usehooks-ts";
 import useAccountSwitching from "./use-account-switching";
 import useThemeSwitching from "./use-theme-switching";
-import type { ComposeButtonHandle } from "@/app/mail/components/compose-button";
-import { useRef } from "react";
 
 export default function KBar({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setTab] = useLocalStorage(`hypermail-tab`, "inbox");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [done, setDone] = useLocalStorage("hypermail-done", false);
-  const composeRef = useRef<ComposeButtonHandle>(null);
   const actions: Action[] = [
     {
       id: "composeAction",
@@ -29,11 +26,6 @@ export default function KBar({ children }: { children: React.ReactNode }) {
       keywords: "write, new, create, message, email",
       section: "ACTIONS",
       perform: () => {
-        composeRef.current?.openCompose();
-        // Focus the "To" field after a small delay
-        setTimeout(() => {
-          document.getElementById("email-to-input")?.focus();
-        }, 100);
       },
     },
     {

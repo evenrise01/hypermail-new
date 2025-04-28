@@ -108,7 +108,7 @@ const HypermailProblemStatement = () => {
             </p>
 
             <p className="max-w-lg text-lg text-zinc-400 md:text-xl">
-              It's not anybody&apos;s fault. Email itself has not changed in
+              It&apos;s not anybody&apos;s fault. Email itself has not changed in
               decades.
               <span className="font-medium text-white">
                 {" "}

@@ -4,7 +4,7 @@ import { persist, restore } from "@orama/plugin-data-persistence";
 import { getEmbeddings } from "./embedding";
 
 export class OramaClient {
-  //@ts-expect-error
+  //@ts-expect-error because of the class constructor
   private orama: AnyOrama;
   private accountId: string;
 

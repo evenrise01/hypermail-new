@@ -2,12 +2,11 @@
 
 import DOMPurify from "dompurify";
 import useThreads from "@/hooks/use-threads";
-import React, { type ComponentProps, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { Inbox, Star, Tag, AlertCircle, Trash2, Archive } from "lucide-react";
+import { Inbox, Star, Trash2, Archive } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
 import { useThreadActions } from "@/hooks/use-thread-actions";
 import { toast } from "sonner";
@@ -60,21 +59,18 @@ const ThreadList = () => {
     {} as Record<string, typeof threads>,
   );
 
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isThreadUnread = (thread: any) => {
     if (tab === "sent") return false;
     return !thread.isRead;
   };
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleThreadClick = (thread: any, e: React.MouseEvent) => {
     if ((e.target as HTMLElement).tagName === "INPUT") return;
 
     if (selectedThreads.size > 0) {
       const newSelection = new Set(selectedThreads);
-      newSelection.has(thread.id)
-        ? newSelection.delete(thread.id)
-        : newSelection.add(thread.id);
+      newSelection.has(thread.id) ? newSelection.delete(thread.id) : newSelection.add(thread.id);
       setSelectedThreads(newSelection);
       return;
     }
@@ -100,7 +96,7 @@ const ThreadList = () => {
       setSelectedThreads(new Set());
     } catch (error) {
       toast.error("Failed to mark threads as read");
-      console.error(error)
+      console.error(error);
     }
   };
 
@@ -203,9 +199,7 @@ const ThreadList = () => {
                       checked={selectedThreads.has(thread.id)}
                       onChange={(e) => {
                         const newSelection = new Set(selectedThreads);
-                        e.target.checked
-                          ? newSelection.add(thread.id)
-                          : newSelection.delete(thread.id);
+                        e.target.checked ? newSelection.add(thread.id) : newSelection.delete(thread.id);
                         setSelectedThreads(newSelection);
                       }}
                       onClick={(e) => e.stopPropagation()}
@@ -321,6 +315,5 @@ const ThreadList = () => {
     </div>
   );
 };
-
 
 export default ThreadList;

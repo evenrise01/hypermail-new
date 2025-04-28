@@ -33,8 +33,6 @@ import ReplyBox from "./reply-box";
 import { useAtom } from "jotai";
 import { isSearchingAtom, searchValueAtom } from "./search-bar";
 import SearchDisplay from "./search-display";
-import { api } from "@/trpc/react";
-import { toast } from "sonner";
 import { useThreadActions } from "@/hooks/use-thread-actions";
 
 const ThreadDisplay = () => {
@@ -52,7 +50,7 @@ const ThreadDisplay = () => {
   const [searchValue] = useAtom(searchValueAtom);
   const [isSearching] = useAtom(isSearchingAtom);
 
-  const setDone = api.account.setDone.useMutation();
+  // const setDone = api.account.setDone.useMutation();
 
   // const handleMarkAsDone = async (value: string) => {
   //   if (!account) return;

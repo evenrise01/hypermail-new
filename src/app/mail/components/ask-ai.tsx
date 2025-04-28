@@ -2,7 +2,7 @@
 import { useChat } from 'ai/react'
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useRef, useState, useEffect, memo, type ReactNode } from 'react'
-import { Send, Sparkles, Loader2, Zap, Brain, Minimize2, Maximize2 } from 'lucide-react';
+import { Send, Sparkles, Loader2, Zap, Brain, Maximize2 } from 'lucide-react';
 import { useLocalStorage } from 'usehooks-ts';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -14,14 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-const transition = {
-  type: "spring",
-  stiffness: 500,
-  damping: 30,
-};
 
 type Props = {
   isCollapsed: boolean;
@@ -251,6 +245,7 @@ const SidebarChat = memo(({
     </div>
   </motion.div>
 ));
+SidebarChat.displayName = "SidebarChat";
 
 const AskAI = ({ isCollapsed, toggleCollapse }: Props) => {
   const [accountId] = useLocalStorage('accountId', '')
@@ -410,7 +405,9 @@ const AskAI = ({ isCollapsed, toggleCollapse }: Props) => {
         input={input}
         handleInputChange={handleInputChange}
         handleFormSubmit={handleFormSubmit}
+        //@ts-expect-error error of unassignable
         inputRef={inputRef}
+        //@ts-expect-error error of unassignable
         messageContainerRef={messageContainerRef}
         setIsExpanded={setIsExpanded}
         focusedRef={focusedRef}

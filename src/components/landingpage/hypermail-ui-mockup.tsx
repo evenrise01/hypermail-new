@@ -1,5 +1,4 @@
 'use client'
-import { useState } from "react";
 import { ArrowRight, ChevronRight, Mail, Sparkles, Zap, Shield, Search, User, Calendar} from "lucide-react";
 
 export default function HypermailAppMockup() {

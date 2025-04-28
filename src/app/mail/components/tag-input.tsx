@@ -52,12 +52,12 @@ const TagInput = ({
       <Select
         className="w-full flex-1"
         value={value}
-        //@ts-expect-error
+        //@ts-expect-error assignment error expected
         onChange={onChange}
         placeholder={placeholder}
         isMulti
         onInputChange={(newInput) => setInput(newInput)}
-        //@ts-expect-error
+        //@ts-expect-error options to be type ignored
         options={input ? options?.concat({
             label: (
                 <span className='flex items-center gap-2'>

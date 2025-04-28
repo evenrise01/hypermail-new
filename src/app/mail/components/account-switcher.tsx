@@ -4,7 +4,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { getAurinkoAuthUrl } from "@/lib/aurinko";
 import { cn } from "@/lib/utils";

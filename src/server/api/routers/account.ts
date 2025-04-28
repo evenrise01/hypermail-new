@@ -4,7 +4,6 @@ import { db } from "@/server/db";
 import type { Prisma } from "@prisma/client";
 import { emailAddressSchema } from "@/lib/types";
 import { Account } from "@/lib/account";
-import { access } from "fs/promises";
 import { OramaClient } from "@/lib/orama";
 import { FREE_CREDITS_PER_DAY } from "@/app/constants";
 
@@ -274,7 +273,7 @@ export const accountRouter = createTRPCRouter({
     await acc.syncEmails().catch(console.error);
 
     // Create base filter with account ID
-    let filter: Prisma.ThreadWhereInput = { accountId: account.id };
+    const filter: Prisma.ThreadWhereInput = { accountId: account.id };
 
     // console.log("Filtering threads for tab: ", input.tab)
 
