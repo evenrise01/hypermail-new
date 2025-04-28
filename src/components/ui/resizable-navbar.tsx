@@ -71,8 +71,7 @@ export const Navbar = ({ children, className }: NavbarProps) => {
   return (
     <motion.div
       ref={ref}
-      // Remove all positioning classes - this is important
-      className={cn("w-full", className)}
+      className={cn("w-full fixed top-0 left-0 z-50", className)}
     >
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
@@ -255,6 +254,7 @@ export const NavbarButton = ({
   as: Tag = "a",
   children,
   className,
+  onClick,
   variant = "primary",
   ...props
 }: {
@@ -263,6 +263,7 @@ export const NavbarButton = ({
   children: React.ReactNode;
   className?: string;
   variant?: "primary" | "secondary" | "dark" | "gradient";
+  onClick?: () => void;
 } & (
   | React.ComponentPropsWithoutRef<"a">
   | React.ComponentPropsWithoutRef<"button">
@@ -278,7 +279,13 @@ export const NavbarButton = ({
     gradient:
       "bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
   };
-
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault(); // Prevent default if we have an onClick handler
+      onClick();
+    }
+    // Otherwise, let the default href behavior work
+  };
   return (
     <Tag
       href={href || undefined}

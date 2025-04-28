@@ -35,7 +35,7 @@ export default function Features() {
   ];
 
   return (
-    <section className="relative overflow-hidden py-24 md:py-32">
+    <section className="relative overflow-hidden py-24 md:py-32" id = "features">
       <div className="mb-8 py-4 text-center">
         <h2 className="text-4xl font-semibold text-balance lg:text-5xl">
           Built to cover{" "}

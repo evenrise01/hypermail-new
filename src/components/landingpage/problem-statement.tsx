@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Mail, Clock, Target, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 const HypermailProblemStatement = () => {
     const [isHovered, setIsHovered] = useState(false)
@@ -68,7 +69,7 @@ const HypermailProblemStatement = () => {
     return (
         <section 
             ref={sectionRef}
-            className="relative py-20 md:py-32 overflow-hidden"
+            className="relative py-20 md:py-32 overflow-hidden" id='product'
         >
             {/* Background gradients */}
             <div className="absolute inset-0 overflow-hidden">
@@ -112,9 +113,12 @@ const HypermailProblemStatement = () => {
                                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-none relative overflow-hidden group transition-all duration-300"
                                 onMouseEnter={() => setIsHovered(true)}
                                 onMouseLeave={() => setIsHovered(false)}
+                                
                             >
+                                <Link href="/sign-up">
                                 <span className="relative z-10">Get Started Free</span>
                                 <span className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
+                                </Link>
                             </Button>
                             <Button 
                                 size="lg" 

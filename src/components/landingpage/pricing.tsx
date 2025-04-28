@@ -16,7 +16,7 @@ export default function Pricing() {
   const proSaving = isYearly ? "Save 25%" : "";
 
   return (
-    <section className="bg-gradient-to-b py-16 md:py-32 from-zinc-900 to-zinc-950">
+    <section className="bg-gradient-to-b py-16 md:py-32 from-zinc-900 to-zinc-950" id = "pricing">
       <div className="mx-auto max-w-5xl px-6">
         <div className="mx-auto max-w-2xl space-y-6 text-center">
           <h1 className="bg-gradient-to-r bg-clip-text text-center text-4xl font-semibold tracking-tight text-transparent lg:text-5xl from-blue-400 to-indigo-500">
@@ -88,7 +88,7 @@ export default function Pricing() {
                   hoveredFree ? "border-blue-600 text-blue-400" : ""
                 }`}
               >
-                <Link href="">Get Started</Link>
+                <Link href="/sign-up">Get Started</Link>
               </Button>
 
               <div className="my-6 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />

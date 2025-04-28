@@ -128,16 +128,16 @@ export default function HeroSection() {
                 >
                   <div key={1} className="bg-indigo-600/10 rounded-[calc(var(--radius-xl)+0.125rem)] border border-indigo-200 dark:border-indigo-800/30 p-0.5">
                     <Button asChild size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-6 text-base">
-                      <Link href="#link">
+                      <Link href="/sign-up">
                         <span className="text-nowrap flex items-center">Get Started <ArrowRight className="ml-2 size-4" /></span>
                       </Link>
                     </Button>
                   </div>
-                  <Button key={2} asChild size="lg" variant="ghost" className="h-10.5 rounded-xl px-5 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20">
+                  {/* <Button key={2} asChild size="lg" variant="ghost" className="h-10.5 rounded-xl px-5 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20">
                     <Link href="#link">
                       <span className="text-nowrap">Watch Demo</span>
                     </Link>
-                  </Button>
+                  </Button> */}
                 </AnimatedGroup>
               </div>
             </div>

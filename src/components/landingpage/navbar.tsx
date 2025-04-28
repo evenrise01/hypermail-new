@@ -19,16 +19,16 @@ interface NavbarAppProps {
 export function NavbarApp({ children }: NavbarAppProps) {
   const navItems = [
     {
+      name: "Product",
+      link: "#product",
+    },
+    {
       name: "Features",
       link: "#features",
     },
     {
       name: "Pricing",
       link: "#pricing",
-    },
-    {
-      name: "Contact",
-      link: "#contact",
     },
   ];
 
@@ -42,8 +42,8 @@ export function NavbarApp({ children }: NavbarAppProps) {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary">Login</NavbarButton>
-            <NavbarButton variant="primary">Sign Up</NavbarButton>
+            <NavbarButton variant="secondary" href="/sign-in">Login</NavbarButton>
+            <NavbarButton variant="primary" href="/sign-up">Sign Up</NavbarButton>
           </div>
         </NavBody>
 
@@ -76,6 +76,7 @@ export function NavbarApp({ children }: NavbarAppProps) {
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
                 className="w-full"
+                href="/sign-in"
               >
                 Login
               </NavbarButton>
@@ -83,6 +84,7 @@ export function NavbarApp({ children }: NavbarAppProps) {
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
                 className="w-full"
+                href="/sign-up"
               >
                 Sign up
               </NavbarButton>
@@ -90,9 +92,10 @@ export function NavbarApp({ children }: NavbarAppProps) {
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
-
-      {/* Children content goes here */}
-      {children}
+      <div className="pt-20">
+        {/* Children content goes here */}
+        {children}
+      </div>
     </div>
   );
 }
