@@ -17,11 +17,11 @@ const HypermailCommandBarFeature = () => {
   const [scrollY, setScrollY] = useState(0);
   const [commandBarOpen, setCommandBarOpen] = useState(false);
   const [isInView, setIsInView] = useState(false);
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const descriptionRef = useRef(null);
-  const commandBarRef = useRef(null);
-  const buttonRef = useRef(null);
+  const sectionRef = useRef<HTMLHeadingElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const commandBarRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Handle scroll position for parallax effect
   useEffect(() => {
@@ -214,7 +214,7 @@ const HypermailCommandBarFeature = () => {
               transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
             }}
           >
-            Access all of Hypermail's powerful features instantly with our
+            Access all of Hypermail&apos;s powerful features instantly with our
             command palette. No more digging through menus.
           </p>
         </div>
@@ -224,11 +224,10 @@ const HypermailCommandBarFeature = () => {
           className="relative mx-auto max-w-3xl"
           style={{
             opacity: 0,
-            transform: "translateY(30px) scale(0.98)",
             transition: "opacity 1s ease-out, transform 1s ease-out",
             transformStyle: "preserve-3d",
             transform: isInView
-              ? `translateY(${Math.max(0, parallaxOffset)}px) rotateX(${rotationAmount}deg)`
+              ? `translateY(${Math.max(0, parallaxOffset)}px) rotateX(${rotationAmount}deg) scale(1)`
               : "translateY(30px) rotateX(5deg) scale(0.98)",
           }}
         >

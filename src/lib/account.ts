@@ -5,7 +5,6 @@ import type {
   EmailMessage,
   EmailAddress,
 } from "./types";
-import { resolve } from "path";
 import { db } from "@/server/db";
 import { syncEmailsToDatabase } from "./sync-to-db";
 
@@ -47,7 +46,7 @@ export class Account {
     pageToken?: string;
   }) {
     console.log("getUpdatedEmails", { deltaToken, pageToken });
-    let params: Record<string, string> = {};
+    const params: Record<string, string> = {};
     if (deltaToken) params.deltaToken = deltaToken;
     if (pageToken) params.pageToken = pageToken;
 

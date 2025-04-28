@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -23,6 +22,7 @@ interface NavProps {
 }
 
 export function Nav({ links, isCollapsed }: NavProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setTab] = useLocalStorage("hypermail-tab", "inbox");
 
   const container = {

@@ -3,7 +3,6 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import StripeButton from './stripe-button'
 import { api } from '@/trpc/react'
-import { FREE_CREDITS_PER_DAY } from '@/app/constants'
 import { getSubscriptionStatus } from '@/lib/stripe-actions'
 import { Sparkles, Zap } from 'lucide-react'
 import {
@@ -56,7 +55,7 @@ const PremiumBanner = ({ isCollapsed }: NavProps) => {
                                         </div>
                                         <div className="h-3"></div>
                                         <p className="text-blue-200 text-sm md:w-full text-center">
-                                            Unlimited access to Hypermail's AI features. Ask as many questions as you want.
+                                            Unlimited access to Hypermail&apos;s AI features. Ask as many questions as you want.
                                         </p>
                                         <div className="h-5"></div>
                                         <StripeButton isCollapsed={isCollapsed} />
@@ -106,7 +105,7 @@ const PremiumBanner = ({ isCollapsed }: NavProps) => {
                                     </div>
                                     <div className="h-3"></div>
                                     <p className="text-slate-600 dark:text-slate-400 text-sm md:w-full text-center">
-                                        Upgrade to Premium for unlimited access to all of Hypermail's AI features.
+                                        Upgrade to Premium for unlimited access to all of Hypermail&apos;s AI features.
                                     </p>
                                     <div className="h-5"></div>
                                     <StripeButton isCollapsed={isCollapsed} />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Mail, Clock, Target, Sparkles, MessageSquare, CheckCircle2, Send, PaperclipIcon, Search, Command, Settings, User, Calendar, Layout, ClipboardList, Zap, ChevronRight, ChevronDown } from 'lucide-react'
+import { Sparkles,  CheckCircle2,  User,  ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import HypermailProblemStatement from './problem-statement'
 import HypermailCommandBarFeature from './command-bar-feature'
@@ -29,6 +29,7 @@ export default function HypermailLanding() {
             threshold: 0.1 // trigger when 10% of element is visible
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const observerCallback = (entries: any[]) => {
             entries.forEach(entry => {
                 const { target, isIntersecting } = entry
@@ -245,9 +246,9 @@ export default function HypermailLanding() {
                                             <div className="text-sm text-zinc-400 mb-2">Subject: Marketing Campaign Results - Q1 2025</div>
                                             <div className="space-y-2 text-sm text-zinc-300">
                                                 <p>Hi Team,</p>
-                                                <p>I've analyzed the Q1 campaign performance data and have some exciting results to share with you.</p>
+                                                <p>I&apos;ve analyzed the Q1 campaign performance data and have some exciting results to share with you.</p>
                                                 <p>The new approach we implemented in March has shown a 25% increase in conversion rates compared to our previous strategy.</p>
-                                                <p>I'd like to schedule a short meeting later this week to discuss these findings in more detail.</p>
+                                                <p>I&apos;d like to schedule a short meeting later this week to discuss these findings in more detail.</p>
                                                 <p>Best regards,</p>
                                                 <p>Your Name</p>
                                             </div>
@@ -307,7 +308,7 @@ export default function HypermailLanding() {
                                 </h3>
                                 <p className="text-zinc-400">
                                     Stop staring at blank screens or writing the same responses over and over. 
-                                    Let Hypermail's AI help you write better emails, faster.
+                                    Let Hypermail&apos;s AI help you write better emails, faster.
                                 </p>
                                 <ul className="space-y-3 text-zinc-400">
                                     {[
@@ -347,7 +348,7 @@ export default function HypermailLanding() {
                                 </h3>
                                 <p className="text-zinc-400">
                                     Stop losing deals and opportunities because of missed follow-ups. 
-                                    Hypermail tracks your important conversations and reminds you when it's time to follow up.
+                                    Hypermail tracks your important conversations and reminds you when it&apos;s time to follow up.
                                 </p>
                                 <ul className="space-y-3 text-zinc-400">
                                     {[

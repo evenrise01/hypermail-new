@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useRef } from 'react'
 import { Mail, Star, Zap } from 'lucide-react'
 import CountUp from 'react-countup'
 import { motion, useInView } from 'framer-motion'

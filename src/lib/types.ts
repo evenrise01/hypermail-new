@@ -69,3 +69,11 @@ export interface EmailHeader {
     name: string;
     value: string;
 }
+
+export interface InternetHeaders {
+    [key: string]: string | string[];
+  }
+  
+export  interface NativeProperties {
+    [key: string]: unknown;
+  }

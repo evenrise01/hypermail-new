@@ -6,7 +6,7 @@ import { getAurinkoAuthUrl } from "@/lib/aurinko";
 
 // Make sure this import matches what's in your lib/aurinko.ts
 // If your function accepts specific provider IDs, you need to match those types
-import { Mail, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 
 const LinkAccountButton = () => {
   // Define a type for valid provider IDs
@@ -39,7 +39,7 @@ const LinkAccountButton = () => {
       <div className="mb-6">
         <h2 className="mb-2 text-lg font-medium text-gray-200">Choose your email provider</h2>
         <p className="text-sm text-gray-400">
-          We'll securely connect to your email to help you track important conversations
+          We&apos;ll securely connect to your email to help you track important conversations
         </p>
       </div>
 

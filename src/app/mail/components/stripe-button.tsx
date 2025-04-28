@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { createBillingPortalSession, createCheckoutSession, getSubscriptionStatus } from '@/lib/stripe-actions'
 import React from 'react'
-import { CreditCard, Settings, Zap } from 'lucide-react'
+import { Settings, Zap } from 'lucide-react'
 
 type StripeButtonProps = {
   isCollapsed?: boolean;

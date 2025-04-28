@@ -13,6 +13,7 @@ const useAccountSwitching = () => {
         shortcut: ['e', 's'],
         section: "Accounts",
     }]
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, setAccountId] = useLocalStorage('accountId', '')
 
     React.useEffect(() => {
@@ -32,7 +33,7 @@ const useAccountSwitching = () => {
         };
     }, [accounts, setAccountId]);
 
-    useRegisterActions(mainAction.concat((accounts?.map((account, index) => {
+    useRegisterActions(mainAction.concat((accounts?.map((account) => {
         return {
             id: account.id,
             name: account.name,

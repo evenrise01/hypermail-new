@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import { Text } from "@tiptap/extension-text";
 import StarterKit from "@tiptap/starter-kit";
 import EditorMenubar from "./editor-menubar";
@@ -13,7 +13,7 @@ import { useTheme } from "next-themes";
 import AIComposeButton from "./ai-compose-button";
 import { generate } from "./action";
 import { readStreamableValue } from "ai/rsc";
-import { ChevronDown, ChevronUp, Loader2, Send, Sparkles, Paperclip, Clock, ImagePlus } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Send, Sparkles} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
@@ -47,7 +47,6 @@ const EmailEditor = ({
   const [token, setToken] = useState<string>("");
   const [isHovered, setIsHovered] = useState(false);
   const [isAITyping, setIsAITyping] = useState(false);
-  const { theme } = useTheme();
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
   const aiGenerate = async (value: string) => {

@@ -26,7 +26,7 @@ const Mail = ({
   defaultLayout = [40, 60],
   defaultCollapsed = false,
 }: Props) => {
-  const [unread, setUnread] = useLocalStorage('hypermail-unread', false)
+  // const [unread, setUnread] = useLocalStorage('hypermail-unread', false)
   const [tab, setTab] = useLocalStorage<"inbox" | "drafts" | "sent" | "unread">(
     "hypermail-tab",
     "inbox",
@@ -87,7 +87,7 @@ const Mail = ({
                     <TabsTrigger
                       value="unread"
                       className="text-zinc-600 dark:text-zinc-200"
-                      onClick={() => setTab("unread" as any)}
+                      onClick={() => setTab("unread")}
                     >
                       Unread
                     </TabsTrigger>

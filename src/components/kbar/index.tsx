@@ -6,7 +6,6 @@ import {
   KBarPositioner,
   KBarAnimator,
   KBarSearch,
-  Priority,
 } from "kbar";
 import { motion, AnimatePresence } from "framer-motion";
 import RenderResults from "./render-results";
@@ -17,7 +16,9 @@ import type { ComposeButtonHandle } from "@/app/mail/components/compose-button";
 import { useRef } from "react";
 
 export default function KBar({ children }: { children: React.ReactNode }) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setTab] = useLocalStorage(`hypermail-tab`, "inbox");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [done, setDone] = useLocalStorage("hypermail-done", false);
   const composeRef = useRef<ComposeButtonHandle>(null);
   const actions: Action[] = [

@@ -6,11 +6,9 @@ import React, { type ComponentProps, useEffect, useState } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Inbox, Star, Tag, AlertCircle, Trash2, Archive } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
-import { api } from "@/trpc/react";
 import { useThreadActions } from "@/hooks/use-thread-actions";
 import { toast } from "sonner";
 
@@ -62,24 +60,13 @@ const ThreadList = () => {
     {} as Record<string, typeof threads>,
   );
 
-  const renderLabelIcon = (label: string) => {
-    switch (label.toLowerCase()) {
-      case "important":
-        return <AlertCircle className="h-3 w-3" />;
-      case "work":
-        return <Tag className="h-3 w-3" />;
-      case "personal":
-        return <Star className="h-3 w-3" />;
-      default:
-        return <Inbox className="h-3 w-3" />;
-    }
-  };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isThreadUnread = (thread: any) => {
     if (tab === "sent") return false;
     return !thread.isRead;
   };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleThreadClick = (thread: any, e: React.MouseEvent) => {
     if ((e.target as HTMLElement).tagName === "INPUT") return;
 
@@ -113,6 +100,7 @@ const ThreadList = () => {
       setSelectedThreads(new Set());
     } catch (error) {
       toast.error("Failed to mark threads as read");
+      console.error(error)
     }
   };
 
@@ -290,35 +278,6 @@ const ThreadList = () => {
                         ),
                       }}
                     ></div>
-                    {/* {thread.emails[0]?.sysLabels.length! > 0 && (
-                      <div className="mt-1 flex flex-wrap items-center gap-2">
-                        {thread.emails[0]?.sysLabels
-                          .filter(
-                            (label: string) => label.toLowerCase() !== "unread",
-                          )
-                          .map((label: string) => {
-                            return (
-                              <Badge
-                                key={label}
-                                variant={getBadgeVariantFromLabel(label)}
-                                className={cn(
-                                  "flex items-center gap-1 transition-all",
-                                  getBadgeVariantFromLabel(label) === "default"
-                                    ? "border-none bg-gradient-to-r from-blue-900 to-purple-400 text-white hover:shadow-md"
-                                    : "border-none bg-gradient-to-r from-blue-900/10 to-purple-400/10 text-blue-900 dark:from-blue-900/20 dark:to-purple-400/20 dark:text-purple-200",
-                                  selectedThreads.has(thread.id)
-                                    ? "opacity-90"
-                                    : "",
-                                )}
-                              >
-                                {renderLabelIcon(label)}
-                                <span>{label}</span>
-                              </Badge>
-                            );
-                          })}
-                      </div>
-                    )} */}
-
                     {isSelected && (
                       <motion.div
                         layoutId="activeThread"
@@ -363,13 +322,5 @@ const ThreadList = () => {
   );
 };
 
-function getBadgeVariantFromLabel(
-  label: string,
-): ComponentProps<typeof Badge>["variant"] {
-  if (["work", "important"].includes(label.toLowerCase())) {
-    return "default";
-  }
-  return "secondary";
-}
 
 export default ThreadList;

@@ -52,12 +52,12 @@ const TagInput = ({
       <Select
         className="w-full flex-1"
         value={value}
-        //@ts-ignore
+        //@ts-expect-error
         onChange={onChange}
         placeholder={placeholder}
         isMulti
         onInputChange={(newInput) => setInput(newInput)}
-        //@ts-ignore
+        //@ts-expect-error
         options={input ? options?.concat({
             label: (
                 <span className='flex items-center gap-2'>

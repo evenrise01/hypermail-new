@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import * as React from "react";
+import { forwardRef, useMemo, type Ref, Fragment } from "react";
 import type { ActionImpl, ActionId } from "kbar";
 
 // Icons matching those in the image
@@ -61,7 +60,7 @@ const AnalyticsIcon = () => (
   </svg>
 );
 
-const ResultItem = React.forwardRef(
+const ResultItem = forwardRef(
   (
     {
       action,
@@ -72,9 +71,9 @@ const ResultItem = React.forwardRef(
       active: boolean;
       currentRootActionId: ActionId;
     },
-    ref: React.Ref<HTMLDivElement>
+    ref: Ref<HTMLDivElement>
   ) => {
-    const ancestors = React.useMemo(() => {
+    const ancestors = useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId
@@ -107,7 +106,7 @@ const ResultItem = React.forwardRef(
       }
       return action.icon;
     };
-
+    ResultItem.displayName = "ResultItem"
     return (
       <div
         ref={ref}
@@ -122,10 +121,10 @@ const ResultItem = React.forwardRef(
           <div className={`text-sm ${active ? "text-gray-100" : "text-gray-300"}`}>
             {ancestors.length > 0 &&
               ancestors.map((ancestor) => (
-                <React.Fragment key={`${action.id}-ancestor-${ancestor.id}`}>
+                <Fragment key={`${action.id}-ancestor-${ancestor.id}`}>
                   <span className="opacity-50 mr-2">{ancestor.name}</span>
                   <span className="mr-2">&rsaquo;</span>
-                </React.Fragment>
+                </Fragment>
               ))}
             <span>{action.name}</span>
           </div>

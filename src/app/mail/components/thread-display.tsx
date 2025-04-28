@@ -11,8 +11,6 @@ import { Separator } from "@/components/ui/separator";
 import useThreads from "@/hooks/use-threads";
 import {
   Archive,
-  ArchiveX,
-  Clock,
   MoreVertical,
   Trash2,
   Star,
@@ -20,13 +18,10 @@ import {
   Forward,
   ArrowLeft,
   Inbox,
-  ChevronDown,
   MessageSquare,
   Tag,
   BellOff,
-  CheckCircle,
   CircleAlert,
-  CircleMinus,
   CircleX,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -49,7 +44,6 @@ const ThreadDisplay = () => {
     trashThread,
     starThread,
     spamThread,
-    markAsReadThread,
     markAsUnreadThread,
   } = useThreadActions();
   const thread = threads?.find((t) => t.id === threadId);
@@ -60,24 +54,24 @@ const ThreadDisplay = () => {
 
   const setDone = api.account.setDone.useMutation();
 
-  const handleMarkAsDone = async (value: string) => {
-    if (!account) return;
+  // const handleMarkAsDone = async (value: string) => {
+  //   if (!account) return;
 
-    setDone.mutate(
-      {
-        threadId: threadId ?? undefined,
-        accountId: account.id,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Thread marked as Done successfully");
-        },
-        onError: () => {
-          toast.error("Something went wrong while marking the thread as done");
-        },
-      },
-    );
-  };
+  //   setDone.mutate(
+  //     {
+  //       threadId: threadId ?? undefined,
+  //       accountId: account.id,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         toast.success("Thread marked as Done successfully");
+  //       },
+  //       onError: () => {
+  //         toast.error("Something went wrong while marking the thread as done");
+  //       },
+  //     },
+  //   );
+  // };
 
   const handleBackToSearch = () => {
     setShowSearchResults(true);
@@ -309,6 +303,7 @@ const ThreadDisplay = () => {
 };
 
 // Extracted ThreadContent component to improve readability
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ThreadContent = ({ thread }: { thread: any }) => {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -354,6 +349,7 @@ const ThreadContent = ({ thread }: { thread: any }) => {
       {/* Email Body */}
       <div className="scrollbar-thin scrollbar-thumb-purple-400/30 dark:scrollbar-thumb-blue-900/30 scrollbar-track-transparent flex max-h-[calc(100vh-400px)] flex-col overflow-auto">
         <div className="flex flex-col gap-6 p-6">
+          {/*eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
           {thread.emails.map((email: any, index: number) => {
             return (
               <motion.div

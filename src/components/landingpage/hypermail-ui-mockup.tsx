@@ -1,9 +1,8 @@
 'use client'
 import { useState } from "react";
-import { ArrowRight, ChevronRight, Mail, Sparkles, Zap, Shield, Search, User, Calendar, MoreHorizontal } from "lucide-react";
+import { ArrowRight, ChevronRight, Mail, Sparkles, Zap, Shield, Search, User, Calendar} from "lucide-react";
 
 export default function HypermailAppMockup() {
-  const [activeView, setActiveView] = useState("priority");
   
   return (
     <div className="bg-gray-950 text-white rounded-xl overflow-hidden border border-indigo-800/30 shadow-lg">
@@ -98,7 +97,7 @@ export default function HypermailAppMockup() {
                 </div>
                 <div className="flex-1">
                   <div className="text-indigo-300 font-medium">AI Assistant</div>
-                  <div className="text-indigo-200/80 text-sm">I've drafted 3 responses for your priority emails</div>
+                  <div className="text-indigo-200/80 text-sm">I&apos;ve drafted 3 responses for your priority emails</div>
                 </div>
                 <button className="text-indigo-400 hover:text-indigo-300">
                   <ArrowRight className="size-5" />

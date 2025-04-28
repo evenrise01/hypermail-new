@@ -1,19 +1,11 @@
 // app/onboarding/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import LinkAccountButton from "@/components/link-account-button";
 
 export default function OnboardingPage() {
-  const router = useRouter();
-  const { user } = useUser();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col bg-black text-white">

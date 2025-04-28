@@ -4,7 +4,7 @@ import { persist, restore } from "@orama/plugin-data-persistence";
 import { getEmbeddings } from "./embedding";
 
 export class OramaClient {
-  //@ts-ignore
+  //@ts-expect-error
   private orama: AnyOrama;
   private accountId: string;
 
@@ -58,6 +58,7 @@ export class OramaClient {
     }
 
     if (account.oramaIndex) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.orama = await restore("json", account.oramaIndex as any);
     } else {
       this.orama = await create({
@@ -100,6 +101,7 @@ export class OramaClient {
     
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async insert(document: any) {
     await insert(this.orama, document);
     await this.saveIndex();

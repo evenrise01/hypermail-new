@@ -197,7 +197,6 @@ export const MobileNavMenu = ({
   children,
   className,
   isOpen,
-  onClose,
 }: MobileNavMenuProps) => {
   return (
     <AnimatePresence>
@@ -290,6 +289,7 @@ export const NavbarButton = ({
     <Tag
       href={href || undefined}
       className={cn(baseStyles, variantStyles[variant], className)}
+      onClick={handleClick}
       {...props}
     >
       {children}

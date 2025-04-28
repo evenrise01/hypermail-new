@@ -229,7 +229,7 @@ export default function Features() {
                         Q2 Marketing Strategy
                       </h5>
                       <p className="line-clamp-1 text-xs text-zinc-500 dark:text-zinc-400">
-                        I've reviewed the Q2 marketing strategy and have some
+                        I&apos;ve reviewed the Q2 marketing strategy and have some
                         suggestions for improvements...
                       </p>
                     </div>
@@ -624,7 +624,7 @@ export default function Features() {
                         </div>
                         <div className="max-w-[80%] rounded-lg rounded-tl-none bg-zinc-800 p-3">
                           <p className="text-sm text-zinc-200">
-                            Hello! I'm your AI email assistant. How can I help
+                            Hello! I&apos;m your AI email assistant. How can I help
                             you today?
                           </p>
                         </div>
@@ -635,7 +635,7 @@ export default function Features() {
                         <div className="max-w-[80%] rounded-lg rounded-tr-none bg-cyan-900/30 p-3">
                           <p className="text-sm text-cyan-200">
                             I need to write a follow-up email to a client who
-                            hasn't responded in a week.
+                            hasn&apos;t responded in a week.
                           </p>
                         </div>
                       </div>
@@ -647,15 +647,15 @@ export default function Features() {
                         </div>
                         <div className="max-w-[80%] rounded-lg rounded-tl-none bg-zinc-800 p-3">
                           <p className="text-sm text-zinc-200">
-                            I've drafted a polite follow-up email for you:
+                            I&apos;ve drafted a polite follow-up email for you:
                           </p>
                           <div className="mt-2 rounded border border-zinc-700 bg-zinc-900 p-2 text-xs text-zinc-300">
                             Subject: Following up on our conversation
                             <br />
                             <br />
-                            Hi [Client's Name],
+                            Hi [Client&apos;s Name],
                             <br />
-                            <br />I hope this email finds you well. I'm just
+                            <br />I hope this email finds you well. I&apos;m just
                             following up on our conversation from last week
                             about [project/topic]...
                           </div>

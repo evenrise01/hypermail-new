@@ -48,21 +48,21 @@ const draftFilter = (accountId: string): Prisma.ThreadWhereInput => ({
   sentStatus: false,
 });
 
-const archiveFilter = (accountId: string): Prisma.ThreadWhereInput => ({
-  accountId,
-  isArchived: true,
-  isTrashed: false, // Archived threads shouldn't be in trash
-});
+// const archiveFilter = (accountId: string): Prisma.ThreadWhereInput => ({
+//   accountId,
+//   isArchived: true,
+//   isTrashed: false, // Archived threads shouldn't be in trash
+// });
 
-const trashFilter = (accountId: string): Prisma.ThreadWhereInput => ({
-  accountId,
-  isTrashed: true,
-});
+// const trashFilter = (accountId: string): Prisma.ThreadWhereInput => ({
+//   accountId,
+//   isTrashed: true,
+// });
 
-const starFilter = (accountId: string): Prisma.ThreadWhereInput => ({
-  accountId,
-  isStarred: true,
-});
+// const starFilter = (accountId: string): Prisma.ThreadWhereInput => ({
+//   accountId,
+//   isStarred: true,
+// });
 
 export const accountRouter = createTRPCRouter({
   getAccounts: protectedProcedure.query(async ({ ctx }) => {

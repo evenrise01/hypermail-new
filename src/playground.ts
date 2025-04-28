@@ -1,8 +1,8 @@
-import {create, insert, search, type AnyOrama} from '@orama/orama'
-import {db} from './server/db'
+// import {create, insert, search, type AnyOrama} from '@orama/orama'
+// import {db} from './server/db'
 import { OramaClient } from './lib/orama'
-import { turndown } from './lib/turndown'
-import { getEmbeddings } from './lib/embedding'
+// import { turndown } from './lib/turndown'
+// import { getEmbeddings } from './lib/embedding'
 
 const orama = new OramaClient('108382')
 await orama.initialise()

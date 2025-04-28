@@ -1,6 +1,5 @@
 "use client"; // Mark this as a Client Component
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import dynamic from "next/dynamic";
 import React from "react";
 import HypermailLoader from "./hypermail-loader";

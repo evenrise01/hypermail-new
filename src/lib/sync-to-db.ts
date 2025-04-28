@@ -208,12 +208,14 @@ async function upsertEmail(
         bcc: { set: bccAddresses.map((a) => ({ id: a!.id })) },
         replyTo: { set: replyToAddresses.map((a) => ({ id: a!.id })) },
         hasAttachments: email.hasAttachments,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         internetHeaders: email.internetHeaders as any,
         body: email.body,
         bodySnippet: email.bodySnippet,
         inReplyTo: email.inReplyTo,
         references: email.references,
         threadIndex: email.threadIndex,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         nativeProperties: email.nativeProperties as any,
         folderId: email.folderId,
         omitted: email.omitted,
@@ -230,6 +232,7 @@ async function upsertEmail(
         internetMessageId: email.internetMessageId,
         subject: email.subject,
         sysLabels: email.sysLabels,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         internetHeaders: email.internetHeaders as any,
         keywords: email.keywords,
         sysClassifications: email.sysClassifications,
@@ -246,6 +249,7 @@ async function upsertEmail(
         inReplyTo: email.inReplyTo,
         references: email.references,
         threadIndex: email.threadIndex,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         nativeProperties: email.nativeProperties as any,
         folderId: email.folderId,
         omitted: email.omitted,

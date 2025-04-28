@@ -18,6 +18,7 @@ import useThreads from "@/hooks/use-threads";
 
 // Main loader component that acts as a wrapper for your dashboard
 const HypermailLoader = ({ children }: { children: React.ReactNode }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [accountId, setAccountId] = useLocalStorage("accountId", "");
   const [isLoading, setIsLoading] = useState(true);
   const [loadingStep, setLoadingStep] = useState(0);
@@ -39,7 +40,7 @@ const HypermailLoader = ({ children }: { children: React.ReactNode }) => {
   } = api.account.getAccounts.useQuery();
 
   // Fetch the threads
-  const { threads, isLoading: isLoadingThreads, account } = useThreads();
+  const { threads, isLoading: isLoadingThreads} = useThreads();
 
   const {
     data: chatbotInteraction,

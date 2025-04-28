@@ -6,7 +6,7 @@ import { useDebounceValue } from "usehooks-ts";
 import useThreads from "@/hooks/use-threads";
 import DOMPurify from "dompurify";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Inbox, AlertCircle } from "lucide-react";
+import { Search, AlertCircle } from "lucide-react";
 
 interface SearchDisplayProps {
   onThreadSelect: (threadId: string) => void;
@@ -16,8 +16,9 @@ const SearchDisplay = ({onThreadSelect}: SearchDisplayProps) => {
   const [searchValue, setSearchValue] = useAtom(searchValueAtom);
   const search = api.account.searchEmails.useMutation();
   const [debouncedSearchValue] = useDebounceValue(searchValue, 700);
-  const { accountId, threadId, setThreadId } = useThreads();
+  const { accountId, setThreadId } = useThreads();
   const [isLoading, setIsLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isSearching, setIsSearching] = useAtom(isSearchingAtom);
   
   // Debounce the search value to reduce backend endpoint calls
@@ -36,14 +37,14 @@ const SearchDisplay = ({onThreadSelect}: SearchDisplayProps) => {
     );
   }, [debouncedSearchValue, accountId]);
 
-  const handleViewFullMessage = (threadId: string) => {
-    // Set the thread to view
-    setThreadId(threadId);
-    // Clear the search results
-    setIsSearching(false)
-    // Optionally clear the search input
-    setSearchValue("");
-  };
+  // const handleViewFullMessage = (threadId: string) => {
+  //   // Set the thread to view
+  //   setThreadId(threadId);
+  //   // Clear the search results
+  //   setIsSearching(false)
+  //   // Optionally clear the search input
+  //   setSearchValue("");
+  // };
 
   // Create a truncated version of text for preview
   const truncateText = (text: string | Node, maxLength = 150) => {
@@ -79,7 +80,7 @@ const SearchDisplay = ({onThreadSelect}: SearchDisplayProps) => {
         <div className="flex items-center gap-3 text-gray-700 dark:text-gray-200">
           <Search className="w-4 h-4" />
           <h2 className="text-sm font-medium">
-            Results for <span className="text-blue-600 dark:text-blue-400">"{searchValue}"</span>
+            Results for <span className="text-blue-600 dark:text-blue-400">&quot;{searchValue}&quot;</span>
           </h2>
           {!isLoading && search.data?.hits && (
             <span className="text-xs bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded-full">
