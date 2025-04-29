@@ -12,9 +12,8 @@ import { Input } from "@/components/ui/input";
 import AIComposeButton from "./ai-compose-button";
 import { generate } from "./action";
 import { readStreamableValue } from "ai/rsc";
-import { ChevronDown, ChevronUp, Loader2, Send, Sparkles} from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Send, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 type Props = {
   subject: string;
@@ -55,7 +54,7 @@ const EmailEditor = ({
       if (token) {
         setToken(token);
         // Small delay to simulate AI typing
-        await new Promise(resolve => setTimeout(resolve, 20));
+        await new Promise((resolve) => setTimeout(resolve, 20));
       }
     }
     setIsAITyping(false);
@@ -105,13 +104,13 @@ const EmailEditor = ({
   if (!editor) return null;
 
   return (
-    <div 
+    <div
       className={cn(
         "relative flex flex-col overflow-hidden rounded-xl transition-all duration-300",
         "border border-gray-100 dark:border-gray-800",
         "bg-white dark:bg-gray-900",
         "shadow-lg shadow-indigo-500/5 dark:shadow-indigo-500/10",
-        isHovered ? "translate-y-[-2px]" : ""
+        isHovered ? "translate-y-[-2px]" : "",
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -127,7 +126,7 @@ const EmailEditor = ({
                 onChange={setToValues}
                 className={cn(
                   "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800",
-                  "shadow-sm rounded-lg focus-within:ring-2 focus-within:ring-indigo-500/20"
+                  "rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20",
                 )}
               />
             </div>
@@ -139,7 +138,7 @@ const EmailEditor = ({
                 onChange={setCcValues}
                 className={cn(
                   "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800",
-                  "shadow-sm rounded-lg focus-within:ring-2 focus-within:ring-indigo-500/20"
+                  "rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20",
                 )}
               />
             </div>
@@ -153,7 +152,7 @@ const EmailEditor = ({
                 onChange={(e) => setSubject(e.target.value)}
                 className={cn(
                   "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800",
-                  "shadow-sm rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  "rounded-lg shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20",
                 )}
               />
             </div>
@@ -168,7 +167,7 @@ const EmailEditor = ({
               className={cn(
                 "flex items-center gap-1 font-medium",
                 "text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20",
-                "transition-all duration-300"
+                "transition-all duration-300",
               )}
               onClick={() => setExpanded(!expanded)}
             >
@@ -189,9 +188,9 @@ const EmailEditor = ({
               onGenerate={onGenerate}
             />
           </div>
-          
+
           {/* Schedule later, add image and attachments functionality to be added later */}
-          
+
           {/* {expanded && (
             <div className="flex gap-2">
               <Button
@@ -223,32 +222,34 @@ const EmailEditor = ({
       <Separator className="bg-gray-100 dark:bg-gray-800" />
 
       {/* Editor section */}
-      <div 
+      <div
         ref={editorContainerRef}
         onClick={handleEditorClick}
         className={cn(
-          "flex-grow px-5 py-4 cursor-text",
-          "bg-white dark:bg-gray-900"
+          "flex-grow cursor-text px-5 py-4",
+          "bg-white dark:bg-gray-900",
         )}
       >
         <div className="relative">
           <EditorMenubar editor={editor} />
-          
+
           <Separator className="my-2 bg-gray-100 dark:bg-gray-800" />
         </div>
 
-        <div className={cn(
-          "prose dark:prose-invert mt-4 max-w-none focus:outline-none",
-          "relative min-h-[200px]"
-        )}>
+        <div
+          className={cn(
+            "prose dark:prose-invert mt-4 max-w-none focus:outline-none",
+            "relative min-h-[200px]",
+          )}
+        >
           <EditorContent
             editor={editor}
             className="min-h-[200px] focus:outline-none"
           />
-          
+
           {/* AI typing indicator */}
           {isAITyping && (
-            <div className="absolute bottom-0 right-0 flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 bg-white/70 dark:bg-gray-900/70 px-3 py-1 rounded-tl-lg backdrop-blur-sm">
+            <div className="absolute right-0 bottom-0 flex items-center gap-2 rounded-tl-lg bg-white/70 px-3 py-1 text-xs text-indigo-600 backdrop-blur-sm dark:bg-gray-900/70 dark:text-indigo-400">
               <Sparkles size={12} className="animate-pulse" />
               <span className="animate-pulse">AI writing...</span>
             </div>
@@ -257,36 +258,36 @@ const EmailEditor = ({
       </div>
 
       {/* Footer section with send button */}
-      <div className={cn(
-        "flex items-center justify-between p-4",
-        "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30",
-        "border-t border-gray-100 dark:border-gray-800"
-      )}>
-        <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
-          <Sparkles size={14} className="text-indigo-500 mr-2" />
+      <div
+        className={cn(
+          "flex items-center justify-between p-4",
+          "bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30",
+          "border-t border-gray-100 dark:border-gray-800",
+        )}
+      >
+        <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+          <Sparkles size={14} className="mr-2 text-indigo-500" />
           <span className="inline-flex items-center">
             Press{" "}
-            <kbd className={cn(
-              "mx-1 rounded px-2 py-1 text-xs font-mono",
-              "bg-white dark:bg-gray-800",
-              "border border-gray-200 dark:border-gray-700",
-              "shadow-sm"
-            )}>
+            <kbd
+              className={cn(
+                "mx-1 rounded px-2 py-1 font-mono text-xs",
+                "bg-white dark:bg-gray-800",
+                "border border-gray-200 dark:border-gray-700",
+                "shadow-sm",
+              )}
+            >
               Cmd/Ctrl+Alt+J
             </kbd>{" "}
             for AI Autocomplete
           </span>
         </div>
-
-        <HoverBorderGradient
-          containerClassName="rounded-md"
-          as="button"
+        <Button
+          disabled={isSending}
           onClick={async () => {
             editor?.commands?.clearContent();
             await handleSend(value);
           }}
-          disabled={isSending}
-          className="text-black dark:text-white"
         >
           {isSending ? (
             <>
@@ -299,7 +300,7 @@ const EmailEditor = ({
               <span>Send</span>
             </>
           )}
-        </HoverBorderGradient>
+        </Button>
       </div>
     </div>
   );

@@ -65,6 +65,7 @@ export default function HeroSection() {
               className="absolute inset-0 -z-20"
             >
               {/* Background can be re-enabled if needed */}
+              <></>
             </AnimatedGroup>
             <div className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--color-background)_75%)]"></div>
             <div className="mx-auto max-w-7xl px-6">

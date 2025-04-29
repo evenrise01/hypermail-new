@@ -22,8 +22,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
+type CardType = "inbox" | "calendar" | "command" | "chatbot" | "integrations" | null;
+
 export default function Features() {
-  const [hoveredCard, setHoveredCard] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState<CardType>(null);
   const [selectedTab, setSelectedTab] = useState("upcoming");
   const integrations = [
     { icon: "/google.svg", name: "Google" },

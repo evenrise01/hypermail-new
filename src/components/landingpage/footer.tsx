@@ -141,7 +141,7 @@ const socialIcons = [
 ]
 
 export default function FooterSection() {
-    const [hoveredGroup, setHoveredGroup] = useState(null);
+    const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
     
     return (
         <footer className="border-t border-zinc-100 bg-black/5 backdrop-blur-xl pt-16 dark:border-zinc-800 dark:bg-zinc-950/80">

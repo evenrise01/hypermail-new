@@ -11,7 +11,7 @@ import Link from "next/link";
 import { Mail, MessageCircleQuestion, ArrowRight } from "lucide-react";
 
 export default function HypermailFAQs() {
-  const [hoveredItem, setHoveredItem] = useState(null);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const faqItems = [
     {

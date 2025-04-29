@@ -164,10 +164,13 @@ const splitText = (text: string, per: "line" | "word" | "char") => {
 };
 
 const hasTransition = (
-  variant: Variant,
+  variant: Variant | undefined, // Allow undefined variant
 ): variant is TargetAndTransition & { transition?: Transition } => {
   return (
-    typeof variant === "object" && variant !== null && "transition" in variant
+    variant !== undefined &&
+    typeof variant === "object" && 
+    variant !== null && 
+    "transition" in variant
   );
 };
 
@@ -176,29 +179,17 @@ const createVariantsWithTransition = (
   transition?: Transition & { exit?: Transition },
 ): Variants => {
   if (!transition) return baseVariants;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { exit: _, ...mainTransition } = transition;
+  const { exit, ...mainTransition } = transition;
 
   return {
     ...baseVariants,
     visible: {
-      ...baseVariants.visible,
-      transition: {
-        ...(hasTransition(baseVariants.visible)
-          ? baseVariants.visible.transition
-          : {}),
-        ...mainTransition,
-      },
+      ...(baseVariants.visible || {}),
+      transition: mainTransition,
     },
     exit: {
-      ...baseVariants.exit,
-      transition: {
-        ...(hasTransition(baseVariants.exit)
-          ? baseVariants.exit.transition
-          : {}),
-        ...mainTransition,
-        staggerDirection: -1,
-      },
+      ...(baseVariants.exit || {}),
+      transition: exit || mainTransition, // Use exit transition if provided
     },
   };
 };

@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import HypermailProblemStatement from './problem-statement'
 import HypermailCommandBarFeature from './command-bar-feature'
 
+type AnimationType = 'fadeIn' | 'slideFromLeft' | 'slideFromRight';
+
 export default function HypermailLanding() {
     // We'll use refs to track DOM elements for animations
     const firstFeatureRef = useRef(null)
@@ -62,7 +64,7 @@ export default function HypermailLanding() {
     }, [])
 
     // Helper function to generate animation classes
-    const getAnimationClass = (isVisible: boolean, animationType: string) => {
+    const getAnimationClass = (isVisible: boolean, animationType: AnimationType) => {
         const baseClasses = {
             fadeIn: "transition-opacity duration-1000 ease-in-out",
             slideFromLeft: "transition-all duration-1000 ease-out transform",
