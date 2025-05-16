@@ -1,9 +1,9 @@
 # 📫 HyperMail – The AI-Powered Email Client
 
 [![Visit Live App](https://img.shields.io/badge/Live%20Demo-Visit%20Now-blue?style=for-the-badge&logo=vercel)](https://hypermail-inky.vercel.app/)
-[![GitHub issues](https://img.shields.io/github/issues/your-username/hypermail?style=for-the-badge)](https://github.com/your-username/hypermail/issues)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/hypermail?style=for-the-badge)](https://github.com/your-username/hypermail/network)
-[![GitHub stars](https://img.shields.io/github/stars/your-username/hypermail?style=for-the-badge)](https://github.com/your-username/hypermail/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/your-username/hypermail?style=for-the-badge)](https://github.com/evenrise01/hypermail-new/issues)
+[![GitHub forks](https://img.shields.io/github/forks/your-username/hypermail?style=for-the-badge)](https://github.com/evenrise01/hypermail-new/network)
+[![GitHub stars](https://img.shields.io/github/stars/your-username/hypermail?style=for-the-badge)](https://github.com/evenrise01/hypermail-new/stargazers)
 
 **HyperMail is the ultimate AI email client and assistant designed to revolutionize your inbox. It automates organization, intelligently prioritizes important messages, and drafts smart replies. Powered by cutting-edge AI, HyperMail helps you declutter your inbox, streamline communication, and supercharge your productivity. Features seamless payments powered by Stripe and secure authentication with Clerk.**
 
