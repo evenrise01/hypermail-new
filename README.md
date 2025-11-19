@@ -172,11 +172,3 @@ Please ensure your pull request describes the problem and solution. Include scre
 Distributed under the MIT License. See `LICENSE.md` for more information.
 
 ---
-
-## 📧 Contact
-
-Your Name / Project Lead - [@YourTwitterHandle](https://twitter.com/YourTwitterHandle) - your.email@example.com
-
-Project Link: [https://github.com/your-username/hypermail](https://github.com/your-username/hypermail)
-
----
